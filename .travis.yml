@@ -24,7 +24,7 @@ script:
   - npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox
 
 before_deploy:
-  - npm run build -- --prod
+  - npm run build -- --prod --no-progress
   - cd functions && npm install && cd ..
 
 deploy:
