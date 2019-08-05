@@ -1,0 +1,36 @@
+dist: trusty
+sudo: false
+
+language: node_js
+node_js:
+  - '10'
+
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+cache:
+  directories:
+    - "./node_modules"
+
+install:
+  - npm install
+
+script:
+  - npm run lint
+  - npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox
+
+before_deploy:
+  - npm run build -- --prod
+
+deploy:
+  provider: firebase
+  token:
+    secure: XuQO4j7xk2YJWtkXsQtIU71CXc2LjbCB3lblmsCcYlzbIWiWk1u26YxGvifpuuQ37PT2FLFnGMsWBP41kieHEw4h/AC2VkLk0cC4vhEhoMATnDDH+4RpmpdOMxMA/lWPwuNTnYMSJm2yJWV8Nz8NjdTHDSAozV2/ZXgiDKgqosXSabpoVHTH7lTcfXJAswfgdAvkeG/k4BGm1LSHTEvU+TdA9QwjmUG9PWQkkRMkEcOuH41BvY0TNMtxsAcTy0ofoDHAkhF/uOHI1J7FaEiLS1R8DwOSBY45EKEaA3dJgBqL0genpqrN7gSF8GFetF0BRXWg9mwDDdF04pgC5C1jWmtsVIjACsLQ6AChrLtpddjwwByX14i835UlFAfCP2hGGCZ5BpraxRQ7sRR5UJM4EWrtquuWTAIedX58n4fgNtxZqd7kquPzhAji6Ul3PMRqaqq9d+1B7BUTkyw0rzkQD7Y9DI9fejpQ8SwA0+FeJwBS+O1Nz+EUdwjAKbCs5YBNaEkm5qJSi06E0pDZz/wwZjoCc0jGX0O2Kj6XFPVRQj9AZ9ZTNteiO8uKYeU4/ykirw6eE50xgwFcAcMQcwK+iCVvEKV0scSd4JKcuczPelAjWpTkMKDKq5EkQMl50W/rhIT8FdNk9rAn1yfKRBL6H0fNSFaZOHq6OLkp2lzojz0=
+
+env:
+  global:
+    secure: XuQO4j7xk2YJWtkXsQtIU71CXc2LjbCB3lblmsCcYlzbIWiWk1u26YxGvifpuuQ37PT2FLFnGMsWBP41kieHEw4h/AC2VkLk0cC4vhEhoMATnDDH+4RpmpdOMxMA/lWPwuNTnYMSJm2yJWV8Nz8NjdTHDSAozV2/ZXgiDKgqosXSabpoVHTH7lTcfXJAswfgdAvkeG/k4BGm1LSHTEvU+TdA9QwjmUG9PWQkkRMkEcOuH41BvY0TNMtxsAcTy0ofoDHAkhF/uOHI1J7FaEiLS1R8DwOSBY45EKEaA3dJgBqL0genpqrN7gSF8GFetF0BRXWg9mwDDdF04pgC5C1jWmtsVIjACsLQ6AChrLtpddjwwByX14i835UlFAfCP2hGGCZ5BpraxRQ7sRR5UJM4EWrtquuWTAIedX58n4fgNtxZqd7kquPzhAji6Ul3PMRqaqq9d+1B7BUTkyw0rzkQD7Y9DI9fejpQ8SwA0+FeJwBS+O1Nz+EUdwjAKbCs5YBNaEkm5qJSi06E0pDZz/wwZjoCc0jGX0O2Kj6XFPVRQj9AZ9ZTNteiO8uKYeU4/ykirw6eE50xgwFcAcMQcwK+iCVvEKV0scSd4JKcuczPelAjWpTkMKDKq5EkQMl50W/rhIT8FdNk9rAn1yfKRBL6H0fNSFaZOHq6OLkp2lzojz0=
