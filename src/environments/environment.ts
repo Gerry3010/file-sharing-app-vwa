@@ -5,14 +5,14 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "AIzaSyDSDjZvLdWEhsdSkwti_-fnEvrahyMMr_s",
-    authDomain: "filesharingapp-vwa-dev.firebaseapp.com",
-    databaseURL: "https://filesharingapp-vwa-dev.firebaseio.com",
-    projectId: "filesharingapp-vwa-dev",
-    storageBucket: "filesharingapp-vwa-dev.appspot.com",
-    messagingSenderId: "872979305527",
-    appId: "1:872979305527:web:9ebf40d5dc7b3b9c"
-  }
+    apiKey: 'AIzaSyDSDjZvLdWEhsdSkwti_-fnEvrahyMMr_s',
+    authDomain: 'filesharingapp-vwa-dev.firebaseapp.com',
+    databaseURL: 'https://filesharingapp-vwa-dev.firebaseio.com',
+    projectId: 'filesharingapp-vwa-dev',
+    storageBucket: 'filesharingapp-vwa-dev.appspot.com',
+    messagingSenderId: '872979305527',
+    appId: '1:872979305527:web:9ebf40d5dc7b3b9c',
+  },
 };
 
 /*
