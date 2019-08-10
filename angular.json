@@ -123,5 +123,8 @@
       }
     }
   },
-  "defaultProject": "file-sharing-app-vwa"
+  "defaultProject": "file-sharing-app-vwa",
+  "cli": {
+    "defaultCollection": "@ngrx/schematics"
+  }
 }
