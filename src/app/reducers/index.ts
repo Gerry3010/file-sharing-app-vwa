@@ -3,18 +3,20 @@ import {
   ActionReducerMap,
   createFeatureSelector,
   createSelector,
-  MetaReducer
+  MetaReducer,
 } from '@ngrx/store';
 import { environment } from '../../environments/environment';
+import * as fromFileRequest from './file-request.reducer';
+import * as fromSharedFile from './shared-file.reducer';
 
-// TODO: Remove next line when interface is not empty anymore
-// tslint:disable-next-line:no-empty-interface
 export interface State {
-
+  [fromFileRequest.fileRequestsFeatureKey]: fromFileRequest.State;
+  [fromSharedFile.sharedFilesFeatureKey]: fromSharedFile.State;
 }
 
 export const reducers: ActionReducerMap<State> = {
-
+  [fromFileRequest.fileRequestsFeatureKey]: fromFileRequest.reducer,
+  [fromSharedFile.sharedFilesFeatureKey]: fromSharedFile.reducer,
 };
 
 

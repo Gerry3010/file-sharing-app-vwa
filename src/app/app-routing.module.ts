@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { FileRequestsComponent } from './file-requests/file-requests.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  { path: '', component: FileRequestsComponent },
+];
 
 @NgModule({
   imports: [

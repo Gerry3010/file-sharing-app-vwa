@@ -1,0 +1,11 @@
+@import "~@angular/material/theming";
+
+@include mat-core();
+
+$file-sharing-app-primary: mat-palette($mat-light-blue);
+
+$file-sharing-app-accent: mat-palette($mat-amber);
+
+$file-sharing-app-theme: mat-light-theme($file-sharing-app-primary, $file-sharing-app-accent);
+
+@include angular-material-theme($file-sharing-app-theme);
