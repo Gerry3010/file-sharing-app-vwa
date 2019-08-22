@@ -1,9 +1,37 @@
-<mat-tab-group>
-  <mat-tab label="One">
-    <h1>Some tab content</h1>
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    File Sharing
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-tab-group backgroundColor="primary" mat-align-tabs="center">
+  <mat-tab label="Empfangen">
+    <ng-template matTabContent>
+      <mat-list>
+        <h3 matSubheader>Favoriten</h3>
+        <mat-list-item>
+          <h4 matLine>#ABC123</h4>
+          <p matLine>Empfangene Dateien: 3</p>
+          <button mat-icon-button>
+            <mat-icon>star</mat-icon>
+          </button>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+        <mat-list-item>
+          <h4 matLine>#ABC123</h4>
+          <p matLine>Empfangene Dateien: 3</p>
+          <button mat-icon-button>
+            <mat-icon>star_border</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Senden">
+    <h1>Some more tab content</h1>
     <p>...</p>
   </mat-tab>
-  <mat-tab label="Two">
+  <mat-tab label="Neueste Dateien">
     <h1>Some more tab content</h1>
     <p>...</p>
   </mat-tab>

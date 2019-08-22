@@ -1,0 +1,10 @@
+@import "~@angular/material/theming";
+
+mat-toolbar {
+  position: relative;
+  z-index: 1;
+}
+
+::ng-deep mat-tab-header {
+  @include mat-elevation(4);
+}

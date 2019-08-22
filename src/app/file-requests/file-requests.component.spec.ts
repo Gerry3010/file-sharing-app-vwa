@@ -2,16 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FileRequestsComponent } from './file-requests.component';
 import { Store, StoreModule } from '@ngrx/store';
+import { MaterialModule } from '../material.module';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-describe('FileRequestComponent', () => {
+describe('FileRequestsComponent', () => {
   let component: FileRequestsComponent;
   let fixture: ComponentFixture<FileRequestsComponent>;
   let store: Store<any>;
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ StoreModule.forRoot({}) ],
-      declarations: [ FileRequestsComponent ]
+      imports: [ NoopAnimationsModule, StoreModule.forRoot({}), MaterialModule ],
+      declarations: [ FileRequestsComponent ],
     });
 
     await TestBed.compileComponents();

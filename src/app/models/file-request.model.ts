@@ -3,10 +3,12 @@ export interface FileRequest {
 
   title: string;
   message?: string;
+  createdAt: Date;
+  updatedAt: Date;
 
   privateKey?: string;  // Kann undefined sein, wenn Dateien gesendet werden
   publicKey: string;
 
-  // files: File[]
+  files: string[];  // IDs der SharedFile Entities
 
 }
