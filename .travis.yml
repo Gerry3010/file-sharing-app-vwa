@@ -17,7 +17,7 @@ cache:
     - "./node_modules"
 
 install:
-  - npm install
+  - npm ci
 
 script:
   - npm run lint
@@ -25,7 +25,7 @@ script:
 
 before_deploy:
   - npm run build -- --prod --no-progress
-  - cd functions && npm install && cd ..
+  - cd functions && npm ci && cd ..
 
 deploy:
   provider: firebase
