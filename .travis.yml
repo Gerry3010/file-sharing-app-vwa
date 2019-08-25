@@ -11,10 +11,12 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
+      - libgconf-2-4
 
 cache:
+  npm: true
   directories:
-    - "./node_modules"
+    - ~/.cache
 
 install:
   - npm ci
@@ -22,6 +24,10 @@ install:
 script:
   - npm run lint
   - npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox
+# TODO:  - cypress run --record --key e82f2ecd-4c62-4334-b045-edfbea51acad
+# This command should be in a npm script that simultaneously runs ng serve and cypress
+# https://docs.cypress.io/guides/guides/continuous-integration.html#Boot-your-server
+
 
 before_deploy:
   - npm run build -- --prod --no-progress
