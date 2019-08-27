@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { FileRequestEffects } from './file-request.effects';
 
 describe('FileRequestEffects', () => {
+  // TODO: Remove next line when at least one actions-observable is assigned to the variable
+  // tslint:disable-next-line:prefer-const
   let actions$: Observable<any>;
   let effects: FileRequestEffects;
 

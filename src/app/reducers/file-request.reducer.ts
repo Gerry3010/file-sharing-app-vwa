@@ -1,6 +1,8 @@
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { FileRequest } from '../models/file-request.model';
 import { FileRequestActions, FileRequestActionTypes } from '../actions/file-request.actions';
+import { createFeatureSelector } from '@ngrx/store';
+
 
 export const fileRequestsFeatureKey = 'fileRequests';
 
@@ -77,3 +79,5 @@ export const {
   selectAll,
   selectTotal,
 } = adapter.getSelectors();
+
+export const selectFeatureState = createFeatureSelector<State>(fileRequestsFeatureKey);

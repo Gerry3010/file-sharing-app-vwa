@@ -1,6 +1,8 @@
-import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
+import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { SharedFile } from '../models/shared-file.model';
 import { SharedFileActions, SharedFileActionTypes } from '../actions/shared-file.actions';
+import { createFeatureSelector } from '@ngrx/store';
+
 
 export const sharedFilesFeatureKey = 'sharedFiles';
 
@@ -16,7 +18,7 @@ export const initialState: State = adapter.getInitialState({
 
 export function reducer(
   state = initialState,
-  action: SharedFileActions
+  action: SharedFileActions,
 ): State {
   switch (action.type) {
     case SharedFileActionTypes.AddSharedFile: {
@@ -71,3 +73,5 @@ export const {
   selectAll,
   selectTotal,
 } = adapter.getSelectors();
+
+export const selectFeatureState = createFeatureSelector<State>(sharedFilesFeatureKey);
