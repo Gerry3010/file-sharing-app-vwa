@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  test: false,
   firebase: {
     apiKey: 'AIzaSyB1V6PDMH2AaKm7-wV7v0s5QMQ6N1blUXs',
     authDomain: 'filesharingapp-vwa.firebaseapp.com',
