@@ -4,12 +4,13 @@
   "scripts": {
     "cypress-open": "cypress open",
     "cypress-run": "cypress run",
+    "cypress-run:ci": "cypress run --record --key e82f2ecd-4c62-4334-b045-edfbea51acad",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng serve & cypress run --record --key e82f2ecd-4c62-4334-b045-edfbea51acad"
+    "e2e": "start-server-and-test start http://localhost:4200/ cypress-run:ci"
   },
   "private": true,
   "dependencies": {
@@ -56,6 +57,7 @@
     "karma-coverage-istanbul-reporter": "~2.1.0",
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.2",
+    "start-server-and-test": "^1.10.0",
     "ts-loader": "6.0.4",
     "ts-node": "~8.3.0",
     "tslint": "~5.19.0",
