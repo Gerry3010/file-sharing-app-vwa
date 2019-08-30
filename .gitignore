@@ -35,6 +35,7 @@ yarn-error.log
 /firebase-debug.log
 testem.log
 /typings
+/cypress/videos/
 
 # System Files
 .DS_Store

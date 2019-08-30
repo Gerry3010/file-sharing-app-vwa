@@ -9,7 +9,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "cypress run"
+    "e2e": "ng serve & cypress run --record --key e82f2ecd-4c62-4334-b045-edfbea51acad"
   },
   "private": true,
   "dependencies": {
