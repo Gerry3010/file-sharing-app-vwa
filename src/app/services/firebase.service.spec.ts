@@ -4,10 +4,10 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { FirebaseService } from './firebase.service';
 import { environment } from 'src/environments/environment';
 import { AngularFireStorageModule } from '@angular/fire/storage';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpEventType } from '@angular/common/http';
 import { SharedFile } from '../models/shared-file.model';
 import { AddSharedFile, SharedFileActionTypes } from '../actions/shared-file.actions';
-import { Subscription } from 'rxjs';
+import { Subscription, concat } from 'rxjs';
 
 
 describe('FirebaseService', () => {
@@ -21,6 +21,7 @@ describe('FirebaseService', () => {
     fileName: 'test.txt',
     id: 'test-id',
     fileRequest: 'piXuZkPCPgrFE3YpIts7',
+    blob: new File([ (new TextEncoder().encode('TEST')) ], 'file'),
   };
 
   beforeEach(() => {
@@ -36,19 +37,23 @@ describe('FirebaseService', () => {
   });
 
   beforeEach((done) => {
-    service.addSharedFile(mockFile).subscribe((ref) => {
-      createdFiles.push(<SharedFile>{ ...mockFile, id: ref.id });
-      done();
-    });
+    subscriptions.push(
+      service.addSharedFile(mockFile).subscribe((ref) => {
+        createdFiles.push(<SharedFile>{ ...mockFile, id: ref.id });
+        done();
+      }),
+    );
   });
 
-  afterEach(done => {
-    createdFiles.forEach(file => {
-      subscriptions.push(service.removeSharedFile(file).subscribe(done));
-    });
+  beforeEach(() => service.uploadFile(mockFile));
+
+  afterEach((done) => {
+    subscriptions.push(
+      concat(...createdFiles.map((file) => service.removeSharedFile(file))).subscribe(done),
+    );
   });
 
-  afterEach(() => subscriptions.forEach(subscription => subscription.unsubscribe()));
+  afterEach(() => subscriptions.forEach((subscription) => subscription.unsubscribe()));
 
   it('should be created', () => {
     expect(service).toBeTruthy();
@@ -56,7 +61,7 @@ describe('FirebaseService', () => {
 
   it('should watch FileRequest piXuZkPCPgrFE3YpIts7 for changes', (done) => {
     subscriptions.push(
-      service.watchFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe(fileRequest => {
+      service.watchFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe((fileRequest) => {
         expect(fileRequest.id).toBe('piXuZkPCPgrFE3YpIts7');
         done();
       }),
@@ -65,7 +70,7 @@ describe('FirebaseService', () => {
 
   it('should watch the files from FileRequest piXuZkPCPgrFE3YpIts7', (done) => {
     subscriptions.push(
-      service.watchFilesFromFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe(files => {
+      service.watchFilesFromFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe((files) => {
         expect(files.length).toBeGreaterThan(0);
         expect(files[0].type === SharedFileActionTypes.AddSharedFile);
         expect((files[0] as AddSharedFile).payload.sharedFile.id).toBeTruthy();
@@ -76,7 +81,7 @@ describe('FirebaseService', () => {
 
   it('should add a file to FileRequest piXuZkPCPgrFE3YpIts7', (done) => {
     subscriptions.push(
-      service.addSharedFile(mockFile).subscribe(ref => {
+      service.addSharedFile(mockFile).subscribe((ref) => {
         createdFiles.push({ ...mockFile, id: ref.id });
         expect(ref.id).toBeTruthy();
         done();
@@ -92,5 +97,39 @@ describe('FirebaseService', () => {
       }, done.fail),
     );
   });
+
+  it('should upload a file to Firebase Cloud Storage', (done) => {
+    subscriptions.push(
+      service.uploadFile(mockFile).snapshotChanges().subscribe((snapshot) => {
+        expect(snapshot).toBeTruthy();
+        expect(snapshot.ref.name).toBe(mockFile.id);
+        expect(snapshot.ref.parent.parent.name).toBe(mockFile.fileRequest);
+      }, done.fail, done),
+    );
+  }, 15000);
+
+  it('should download the mock file from FCS', (done) => {
+    subscriptions.push(
+      service.downloadFile(mockFile).subscribe((event) => {
+        if (event.type === HttpEventType.DownloadProgress) {
+          expect(event.loaded).toBeGreaterThanOrEqual(0);
+        }
+        if (event.type === HttpEventType.Response) {
+          expect(event.ok).toBeTruthy();
+          expect(event.body.size).toEqual(mockFile.blob.size);
+          done();
+        }
+      }, done.fail),
+    );
+  }, 15000);
+
+  it('should delete the mock file from FCS', (done) => {
+    subscriptions.push(
+      service.deleteFile(mockFile).subscribe(((value) => {
+        expect(value).not.toBeTruthy();
+        done();
+      }), done.fail),
+    );
+  }, 10000);
 
 });

@@ -82,6 +82,7 @@
       "check-else",
       "check-whitespace"
     ],
+    "arrow-parens": true,
     "prefer-const": true,
     "quotemark": [
       true,

@@ -6,7 +6,7 @@ export const environment = {
     authDomain: 'filesharingappvwa-test.firebaseapp.com',
     databaseURL: 'https://filesharingappvwa-test.firebaseio.com',
     projectId: 'filesharingappvwa-test',
-    storageBucket: '',
+    storageBucket: 'filesharingappvwa-test.appspot.com',
     messagingSenderId: '33362117736',
     appId: '1:33362117736:web:13387d66ddc2b4f7',
   },

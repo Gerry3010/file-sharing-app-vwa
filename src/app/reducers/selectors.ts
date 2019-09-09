@@ -13,14 +13,14 @@ const selectFilesByFileRequestIds = createSelector<fromIndex.State, string[], fr
   fromSharedFile.selectFeatureState,
   (fileRequests, sharedFiles, fileRequestIds) =>
     Object.values(fileRequests.entities)
-      .filter(fr => fileRequestIds.includes(fr.id))
-      .flatMap(fr => fr.files.map(fileId => sharedFiles.entities[fileId])),
+      .filter((fr) => fileRequestIds.includes(fr.id))
+      .flatMap((fr) => fr.files.map((fileId) => sharedFiles.entities[fileId])),
 );
 
 const selectFilesByFileRequestId = createSelector<fromIndex.State, string, fromFileRequest.State, fromSharedFile.State, SharedFile[]>(
   fromFileRequest.selectFeatureState,
   fromSharedFile.selectFeatureState,
-  (fileRequests, sharedFiles, fileRequestId) => fileRequests.entities[fileRequestId].files.map(fileId => sharedFiles.entities[fileId]),
+  (fileRequests, sharedFiles, fileRequestId) => fileRequests.entities[fileRequestId].files.map((fileId) => sharedFiles.entities[fileId]),
 );
 
 

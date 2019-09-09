@@ -32,9 +32,9 @@ import { FileRequestsComponent } from './file-requests/file-requests.component';
     HttpClientModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule.enablePersistence(), // TODO: Configure persistence
+    AngularFirestoreModule.enablePersistence({ synchronizeTabs: true }), // Configures persistence
     AngularFireStorageModule,
-    StoreModule.forRoot(reducers, { metaReducers }),
+    StoreModule.forRoot(reducers, { metaReducers, runtimeChecks: {} }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
     EffectsModule.forRoot(effects),
     MaterialModule,

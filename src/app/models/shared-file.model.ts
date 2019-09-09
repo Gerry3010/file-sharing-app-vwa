@@ -12,6 +12,9 @@ export interface SharedFile {
 
   downloadUrl?: string;
 
+  encryptedSymmetricKey?: string;
+  encryptedIv?: string;
+
   blob?: File;
 
 }

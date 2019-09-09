@@ -24,9 +24,9 @@ export class FirebaseService {
    */
   public watchFileRequests(ids: string[]): Observable<FileRequest> {
     return merge(
-      ...ids.map(id => this.fileRequestCollection.doc<FileRequest>(id).valueChanges().pipe(
-        filter(fr => fr !== undefined),
-        map(fr => ({ ...fr, id })),
+      ...ids.map((id) => this.fileRequestCollection.doc<FileRequest>(id).valueChanges().pipe(
+        filter((fr) => fr !== undefined),
+        map((fr) => ({ ...fr, id })),
       )),
     );
   }
@@ -37,9 +37,9 @@ export class FirebaseService {
    */
   public watchFilesFromFileRequests(ids: string[]): Observable<SharedFileActions[]> {
     return merge(
-      ...ids.map(id => this.fileRequestCollection.doc(id).collection<SharedFile>('files').stateChanges()),
+      ...ids.map((id) => this.fileRequestCollection.doc(id).collection<SharedFile>('files').stateChanges()),
     ).pipe(
-      map(actions => actions.map(action => {
+      map((actions) => actions.map((action) => {
         const sharedFile = { ...action.payload.doc.data(), id: action.payload.doc.id };
         switch (action.type) {
           case 'added': {
@@ -84,9 +84,13 @@ export class FirebaseService {
 
   public downloadFile(sharedFile: SharedFile) {
     return this.getFileRef(sharedFile).getDownloadURL().pipe(
-      flatMap(downloadUrl => this.http.get(downloadUrl, { responseType: 'blob' })),
+      flatMap((downloadUrl) => this.http.get(downloadUrl, { responseType: 'blob', reportProgress: true, observe: 'events' })),
       // map(blob => new File([ blob ], sharedFile.fileName, { type: blob.type })), // TO DO: Check if correct
     );
+  }
+
+  public deleteFile(sharedFile: SharedFile) {
+    return this.getFileRef(sharedFile).delete();
   }
 
 
