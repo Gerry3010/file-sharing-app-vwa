@@ -86,7 +86,7 @@ export class FileService {
 
   public shareFiles(...sharedFiles: SharedFile[]): Observable<unknown> {
     const navigator_ = navigator as any;
-    if (this.canShareFiles(...sharedFiles)) {
+    if (!this.canShareFiles(...sharedFiles)) {
       return throwError(new Error('Das Teilen von Dateien wird nicht unterstützt!'));
     }
 
