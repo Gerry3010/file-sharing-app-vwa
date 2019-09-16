@@ -50,7 +50,7 @@ export class FileRequestsComponent implements OnInit {
           fileIconURL,
         });
         if (canShareFiles) {
-          this.fileService.shareFiles(sharedFile);
+          this.fileService.shareFiles(sharedFile).subscribe(console.log, console.error);
         } else {
           this.fileService.downloadFiles(sharedFile);
         }
