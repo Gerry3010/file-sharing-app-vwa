@@ -36,15 +36,16 @@ export class FileService {
   }
 
   private mapBlobs = (sharedFiles: SharedFile[]) => sharedFiles.map((sharedFile) => {
-    const blob: any = sharedFile.blob;
+    const blob = sharedFile.blob;
 
     if (!sharedFile.blob) {
       return undefined;
     }
 
-    blob.lastModified = blob.lastModified || sharedFile.createdAt.getTime();
-    blob.name = sharedFile.fileName;
-    return blob as File;
+    const lastModified = blob.lastModified || sharedFile.createdAt.getTime();
+    const name = sharedFile.fileName || blob.name;
+
+    return new File([ blob ], name, { type: blob.type, lastModified });
   });
 
 
