@@ -17,16 +17,22 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 
-import { reducers, metaReducers } from './reducers';
+import { metaReducers, reducers } from './reducers';
 import { effects } from './effects';
 import { FileRequestsComponent } from './file-requests/file-requests.component';
+import { IncomingRequestsComponent } from './incoming-requests/incoming-requests.component';
+import { CommonModule } from '@angular/common';
+import { OutgoingRequestsComponent } from './outgoing-requests/outgoing-requests.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FileRequestsComponent,
+    IncomingRequestsComponent,
+    OutgoingRequestsComponent,
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,

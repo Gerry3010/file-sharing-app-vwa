@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of, throwError } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 import * as pako from 'pako';
-import { flatMap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { fileExtensions } from './file-extensions';
 import { SharedFile } from '../models/shared-file.model';
 import * as JSZip from 'jszip';
@@ -81,7 +81,7 @@ export class FileService {
 
   public canShareFiles(...sharedFiles: SharedFile[]): boolean {
     const navigator_ = navigator as any;
-    return navigator_.canShare && navigator_.canShare({ files: this.mapBlobs(sharedFiles) });
+    return !!navigator_.canShare && navigator_.canShare({ files: this.mapBlobs(sharedFiles) });
   }
 
   public shareFiles(...sharedFiles: SharedFile[]): Observable<unknown> {

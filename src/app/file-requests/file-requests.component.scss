@@ -5,6 +5,12 @@ mat-toolbar {
   z-index: 1;
 }
 
+.fsa-fab {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+}
+
 ::ng-deep mat-tab-header {
   @include mat-elevation(4);
 }
