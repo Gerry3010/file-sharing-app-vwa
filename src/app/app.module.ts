@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { environment } from '../environments/environment';
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MaterialModule } from './material.module';
@@ -19,9 +19,9 @@ import { EffectsModule } from '@ngrx/effects';
 
 import { metaReducers, reducers } from './reducers';
 import { effects } from './effects';
+
 import { FileRequestsComponent } from './file-requests/file-requests.component';
 import { IncomingRequestsComponent } from './incoming-requests/incoming-requests.component';
-import { CommonModule } from '@angular/common';
 import { OutgoingRequestsComponent } from './outgoing-requests/outgoing-requests.component';
 
 @NgModule({

@@ -72,7 +72,6 @@ export class FileService {
     const extensionRegex = /(?:\.([^.]+))?$/;
 
     const extension = extensionRegex.exec(fileName)[1];
-    console.log(extension);
 
     const extensionExists = extension && fileExtensions.includes(extension.toUpperCase());
 

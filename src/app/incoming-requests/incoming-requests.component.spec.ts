@@ -3,6 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IncomingRequestsComponent } from './incoming-requests.component';
 import { Store, StoreModule } from '@ngrx/store';
 import { State } from '../reducers';
+import { MaterialModule } from '../material.module';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('IncomingRequestsComponent', () => {
   let component: IncomingRequestsComponent;
@@ -11,7 +13,7 @@ describe('IncomingRequestsComponent', () => {
 
   beforeEach(async() => {
     TestBed.configureTestingModule({
-      imports: [ StoreModule.forRoot({}) ],
+      imports: [ NoopAnimationsModule, StoreModule.forRoot({}), MaterialModule ],
       declarations: [ IncomingRequestsComponent ]
     });
 
