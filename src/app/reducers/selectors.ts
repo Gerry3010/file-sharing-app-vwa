@@ -28,7 +28,7 @@ const selectFileRequestByFileId = createSelector<fromIndex.State, string, fromSh
   fromSharedFile.selectFeatureState,
   fromFileRequest.selectFeatureState,
   (sharedFiles, fileRequests, fileId) =>
-    fileRequests.entities[sharedFiles.entities[fileId].fileRequest],
+    sharedFiles.entities[fileId].fileRequest ? fileRequests.entities[sharedFiles.entities[fileId].fileRequest] : undefined,
 );
 
 

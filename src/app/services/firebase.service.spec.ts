@@ -6,8 +6,9 @@ import { environment } from 'src/environments/environment';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { HttpClientModule, HttpEventType } from '@angular/common/http';
 import { SharedFile } from '../models/shared-file.model';
-import { AddSharedFile, SharedFileActionTypes } from '../actions/shared-file.actions';
-import { Subscription, concat } from 'rxjs';
+import { SharedFileActionTypes } from '../actions/shared-file.actions';
+import { concat, Subscription } from 'rxjs';
+import { FileRequestActionTypes } from '../actions/file-request.actions';
 
 
 describe('FirebaseService', () => {
@@ -62,7 +63,8 @@ describe('FirebaseService', () => {
   it('should watch FileRequest piXuZkPCPgrFE3YpIts7 for changes', (done) => {
     subscriptions.push(
       service.watchFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe((fileRequest) => {
-        expect(fileRequest.id).toBe('piXuZkPCPgrFE3YpIts7');
+        expect(fileRequest.type).toBe(FileRequestActionTypes.AddFileRequest);
+        expect(fileRequest.payload.fileRequest.id).toBe('piXuZkPCPgrFE3YpIts7');
         done();
       }),
     );
@@ -70,12 +72,12 @@ describe('FirebaseService', () => {
 
   it('should watch the files from FileRequest piXuZkPCPgrFE3YpIts7', (done) => {
     subscriptions.push(
-      service.watchFilesFromFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe((files) => {
-        expect(files.length).toBeGreaterThan(0);
-        expect(files[0].type === SharedFileActionTypes.AddSharedFile);
-        expect((files[0] as AddSharedFile).payload.sharedFile.id).toBeTruthy();
+      service.watchFilesFromFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe((action) => {
+        expect(action.type === SharedFileActionTypes.AddSharedFile);
+        expect(action.payload.sharedFile.id).toBeTruthy();
+        expect(action.payload.sharedFile.fileRequest).toEqual('piXuZkPCPgrFE3YpIts7');
         done();
-      }),
+      }, done.fail),
     );
   });
 

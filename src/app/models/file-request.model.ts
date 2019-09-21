@@ -11,4 +11,6 @@ export interface FileRequest {
 
   files: string[];  // IDs der SharedFile Entities
 
+  deleted: boolean;
+
 }
