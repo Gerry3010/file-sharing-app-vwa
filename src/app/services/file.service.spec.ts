@@ -27,10 +27,10 @@ describe('FileService', () => {
     }, done.fail);
   });
 
-  it('should compress and decompress a image blob', (done) => {
+  it('should compress and decompress an image blob', (done) => {
     let testBlob: Blob;
     from(
-      fetch('https://picsum.photos/1272/708'),
+      fetch('/assets/file-icons/SVG.svg'),
     ).pipe(
       flatMap((res) => res.blob()),
       tap((blob) => testBlob = blob),

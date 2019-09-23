@@ -42,8 +42,8 @@ export class FileService {
       return undefined;
     }
 
-    const lastModified = blob.lastModified || sharedFile.createdAt.getTime();
-    const name = sharedFile.fileName || blob.name;
+    const lastModified = (blob as File).lastModified || sharedFile.createdAt.getTime();
+    const name = sharedFile.fileName || (blob as File).name;
 
     return new File([ blob ], name, { type: blob.type, lastModified });
   });
@@ -111,7 +111,8 @@ export class FileService {
     if (sharedFiles.length > 1) {
       const zip = new JSZip();
       sharedFiles.forEach((sharedFile) => {
-        zip.file(sharedFile.fileName, sharedFile.blob, { date: new Date(sharedFile.blob.lastModified) });
+        const lastModified = (sharedFile.blob as File).lastModified || sharedFile.createdAt || new Date();
+        zip.file(sharedFile.fileName, sharedFile.blob, { date: new Date(lastModified) });
       });
       const archive = await zip.generateAsync({ type: 'blob' });
       FileSaver.saveAs(archive, 'Archiv.zip');

@@ -16,6 +16,6 @@ export interface SharedFile {
   encryptedSymmetricKey?: string;
   encryptedIv?: string;
 
-  blob?: File;
+  blob?: Blob;
 
 }

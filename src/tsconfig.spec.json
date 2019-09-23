@@ -12,7 +12,11 @@
     "polyfills.ts"
   ],
   "include": [
+    "../node_modules/idb/**/*.ts",
     "**/*.spec.ts",
     "**/*.d.ts"
+  ],
+  "exclude": [
+    "../node_modules/idb/test/**/*.ts"
   ]
 }
