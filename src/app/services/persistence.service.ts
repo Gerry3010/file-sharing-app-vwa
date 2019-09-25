@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { DBSchema, IDBPDatabase, openDB } from 'idb/with-async-ittr';
 import { FileRequest } from '../models/file-request.model';
 import { SharedFile } from '../models/shared-file.model';
@@ -31,7 +31,8 @@ export class PersistenceService {
 
   private readonly dbPromise: Promise<IDBPDatabase<DatabaseState>>;
 
-  constructor(@Inject('dbName') dbName = DB_NAME) {
+  constructor(@Inject('dbName') @Optional() dbName?) {
+    dbName = dbName || DB_NAME;
     this.dbPromise = openDB<DatabaseState>(dbName, 1, {
       upgrade(database) {
         database.createObjectStore(FILE_REQUESTS_STORE, { keyPath: 'id' });

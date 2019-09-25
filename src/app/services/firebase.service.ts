@@ -4,10 +4,10 @@ import { FileRequest } from '../models/file-request.model';
 import { SharedFile } from '../models/shared-file.model';
 import { from, merge, Observable, throwError } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
-import { AddSharedFile, UpsertSharedFile } from '../actions/shared-file.actions';
+import { UpsertSharedFile } from '../actions/shared-file.actions';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { HttpClient } from '@angular/common/http';
-import { AddFileRequest, UpsertFileRequest } from '../actions/file-request.actions';
+import { UpsertFileRequest } from '../actions/file-request.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -23,12 +23,13 @@ export class FirebaseService {
    * Listens for changes in the file requests for the given ids and emits them directly
    * @param ids  the ids of the file requests
    */
-  public watchFileRequests(ids: string[]): Observable<AddFileRequest | UpsertFileRequest> {
+  public watchFileRequests(ids: string[]): Observable<UpsertFileRequest> {
     return merge(
       ...ids.map((id) => this.fileRequestCollection.doc<FileRequest>(id).snapshotChanges().pipe(
         map((action) => {
           const fileRequest: FileRequest = { ...action.payload.data(), id, deleted: action.type === 'removed' };
-          switch (action.type) {
+          return new UpsertFileRequest({ fileRequest });
+          /*switch (action.type) {
             case 'value':
             case 'added': {
               return new AddFileRequest({ fileRequest });
@@ -39,7 +40,7 @@ export class FirebaseService {
             case 'removed': {
               return new UpsertFileRequest({ fileRequest });
             }
-          }
+          }*/
         }),
         // filter((fr) => fr !== undefined),
         // map((fr) => ({ ...fr, id })),
@@ -51,7 +52,7 @@ export class FirebaseService {
    * Listens for changes in the files for the given file request ids and emits them as actions
    * @param ids  the ids of the file requests
    */
-  public watchFilesFromFileRequests(ids: string[]): Observable<AddSharedFile | UpsertSharedFile> {
+  public watchFilesFromFileRequests(ids: string[]): Observable<UpsertSharedFile> {
     return merge(
       ...ids.map((id) => this.fileRequestCollection.doc(id).collection<SharedFile>('files').stateChanges()),
     ).pipe(
@@ -61,17 +62,18 @@ export class FirebaseService {
           ...action.payload.doc.data(),
           id: action.payload.doc.id,
         };
-        switch (action.type) {
+        return new UpsertSharedFile({ sharedFile });
+        /*switch (action.type) {
           case 'added': {
             return new AddSharedFile({ sharedFile });
           }
           case 'modified': {
             return new UpsertSharedFile({ sharedFile });
-          }
-          /* case 'removed':
-            // Do nothing since the file is saved locally
-            return new DeleteSharedFile({ id: sharedFile.id }); */
-        }
+          }*/
+        /* case 'removed':
+          // Do nothing since the file is saved locally
+          return new DeleteSharedFile({ id: sharedFile.id });
+      }*/
       })),
     );
   }
