@@ -5,6 +5,7 @@ import { SharedFile } from '../models/shared-file.model';
 import { FileRequest } from '../models/file-request.model';
 import { combineLatest } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
+import { deleteDB } from 'idb';
 
 describe('PersistenceService', () => {
   let service: PersistenceService;
@@ -12,9 +13,14 @@ describe('PersistenceService', () => {
   let createdRequests: FileRequest[] = [];
   let createdFiles: SharedFile[] = [];
 
+  beforeAll(() => {
+    localStorage.clear();
+    return deleteDB('dbName');
+  });
+
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = new PersistenceService();
+    service = new PersistenceService('dbName');
   });
 
   beforeEach((done) => {
@@ -147,6 +153,19 @@ describe('PersistenceService', () => {
       createdFiles.splice(0, 1);
       done();
     }, done.fail);
+  });
+
+  it('should store and get downloads', async () => {
+    const before = service.getDownloads();
+    service.storeDownloads([
+      { completed: true, sharedFileId: createdFiles[2].id },
+    ]);
+    const after = service.getDownloads();
+
+    expect(before).not.toEqual(after);
+
+    expect(after[0].completed).toBe(true);
+    expect(after[0].sharedFileId).toEqual(createdFiles[2].id);
   });
 
 });

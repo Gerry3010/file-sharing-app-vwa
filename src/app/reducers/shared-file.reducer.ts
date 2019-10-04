@@ -2,6 +2,7 @@ import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { SharedFile } from '../models/shared-file.model';
 import { SharedFileActions, SharedFileActionTypes } from '../actions/shared-file.actions';
 import { createFeatureSelector } from '@ngrx/store';
+import { DownloadActions, DownloadActionTypes } from '../actions/download.actions';
 
 
 export const sharedFilesFeatureKey = 'sharedFiles';
@@ -18,7 +19,7 @@ export const initialState: State = adapter.getInitialState({
 
 export function reducer(
   state = initialState,
-  action: SharedFileActions,
+  action: SharedFileActions | DownloadActions,
 ): State {
   switch (action.type) {
     case SharedFileActionTypes.AddSharedFile: {
@@ -59,6 +60,13 @@ export function reducer(
 
     case SharedFileActionTypes.ClearSharedFiles: {
       return adapter.removeAll(state);
+    }
+
+    case DownloadActionTypes.DownloadFinished: {
+      return adapter.updateOne({
+        id: action.payload.sharedFileId,
+        changes: { blob: action.payload.file, downloadedAt: new Date() },
+      }, state);
     }
 
     default: {

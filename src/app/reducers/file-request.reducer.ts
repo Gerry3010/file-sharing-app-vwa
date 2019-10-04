@@ -1,4 +1,4 @@
-import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
+import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { FileRequest } from '../models/file-request.model';
 import { FileRequestActions, FileRequestActionTypes } from '../actions/file-request.actions';
 import { createFeatureSelector } from '@ngrx/store';
@@ -63,8 +63,18 @@ export function reducer(
       return { ...state, loading: false };
     }
 
-    case FileRequestActionTypes.ClearFileRequests: {
-      return adapter.removeAll(state);
+    case FileRequestActionTypes.AddFileToFileRequest: {
+      return adapter.upsertOne({
+        ...state.entities[action.payload.fileRequestId],
+        files: [ ...(state.entities[action.payload.fileRequestId].files || []), action.payload.sharedFileId ],
+      }, state);
+    }
+
+    case FileRequestActionTypes.RemoveFileFromFileRequest: {
+      return adapter.upsertOne({
+        ...state.entities[action.payload.fileRequestId],
+        files: (state.entities[action.payload.fileRequestId].files || []).filter((fileId) => fileId !== action.payload.sharedFileId),
+      }, state);
     }
 
     default: {

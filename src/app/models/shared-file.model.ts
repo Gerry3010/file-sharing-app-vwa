@@ -11,10 +11,10 @@ export interface SharedFile {
 
   fileName?: string;
 
-  downloadUrl?: string;
-
   encryptedSymmetricKey?: string;
-  encryptedIv?: string;
+  encryptedIV?: string;
+
+  isDecrypted?: boolean;
 
   blob?: Blob;
 

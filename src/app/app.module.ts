@@ -13,16 +13,22 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 
-import { StoreModule } from '@ngrx/store';
+import { META_REDUCERS, MetaReducer, StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 
-import { metaReducers, reducers } from './reducers';
+import { metaReducers, reducers, State } from './reducers';
 import { effects } from './effects';
 
 import { FileRequestsComponent } from './file-requests/file-requests.component';
 import { IncomingRequestsComponent } from './incoming-requests/incoming-requests.component';
 import { OutgoingRequestsComponent } from './outgoing-requests/outgoing-requests.component';
+import { PersistenceService } from './services/persistence.service';
+import { persistenceMetaReducer } from './reducers/persistence.metareducer';
+
+export function getMetaReducers(persistenceService: PersistenceService): MetaReducer<State> {
+  return persistenceMetaReducer(persistenceService);
+}
 
 @NgModule({
   declarations: [
@@ -45,7 +51,14 @@ import { OutgoingRequestsComponent } from './outgoing-requests/outgoing-requests
     EffectsModule.forRoot(effects),
     MaterialModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: META_REDUCERS,
+      deps: [ PersistenceService ],
+      useFactory: getMetaReducers,
+      multi: true,
+    },
+  ],
   bootstrap: [ AppComponent ],
 })
 export class AppModule {

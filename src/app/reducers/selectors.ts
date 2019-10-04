@@ -3,9 +3,11 @@ import { createSelector } from '@ngrx/store';
 import * as fromIndex from './index';
 import * as fromFileRequest from './file-request.reducer';
 import * as fromSharedFile from './shared-file.reducer';
+import * as fromDownload from './download.reducer';
 
 import { FileRequest } from '../models/file-request.model';
 import { SharedFile } from '../models/shared-file.model';
+import { FileDownloadWithFile } from '../models/file-download.model';
 
 
 const selectFilesByFileRequestIds = createSelector<fromIndex.State, string[], fromFileRequest.State, fromSharedFile.State, SharedFile[]>(
@@ -23,13 +25,31 @@ const selectFilesByFileRequestId = createSelector<fromIndex.State, string, fromF
   (fileRequests, sharedFiles, fileRequestId) => fileRequests.entities[fileRequestId].files.map((fileId) => sharedFiles.entities[fileId]),
 );
 
+const selectFileById = createSelector<fromIndex.State, string, fromSharedFile.State, SharedFile | undefined>(
+  fromSharedFile.selectFeatureState,
+  (sharedFiles, sharedFileId) => sharedFiles.entities[sharedFileId],
+);
+
 
 const selectFileRequestByFileId = createSelector<fromIndex.State, string, fromSharedFile.State, fromFileRequest.State, FileRequest>(
   fromSharedFile.selectFeatureState,
   fromFileRequest.selectFeatureState,
   (sharedFiles, fileRequests, fileId) =>
-    sharedFiles.entities[fileId].fileRequest ? fileRequests.entities[sharedFiles.entities[fileId].fileRequest] : undefined,
+    (sharedFiles.entities[fileId] && sharedFiles.entities[fileId].fileRequest)
+      ? fileRequests.entities[sharedFiles.entities[fileId].fileRequest]
+      : undefined,
 );
 
 
-export { selectFilesByFileRequestIds, selectFilesByFileRequestId, selectFileRequestByFileId };
+const selectDownloadWithSharedFile =
+  createSelector<fromIndex.State, string, fromSharedFile.State, fromDownload.State, FileDownloadWithFile>(
+    fromSharedFile.selectFeatureState,
+    fromDownload.selectFeatureState,
+    (sharedFileState, downloadState, sharedFileId) => ({
+      ...downloadState.downloads[sharedFileId],
+      sharedFile: sharedFileState.entities[sharedFileId],
+    }),
+  );
+
+
+export { selectFilesByFileRequestIds, selectFilesByFileRequestId, selectFileById, selectFileRequestByFileId, selectDownloadWithSharedFile };

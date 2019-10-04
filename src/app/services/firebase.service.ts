@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { FileRequest } from '../models/file-request.model';
 import { SharedFile } from '../models/shared-file.model';
-import { from, merge, Observable, throwError } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { UpsertSharedFile } from '../actions/shared-file.actions';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { HttpClient } from '@angular/common/http';
 import { UpsertFileRequest } from '../actions/file-request.actions';
+import FullMetadata = firebase.storage.FullMetadata;
 
 @Injectable({
   providedIn: 'root',
@@ -21,66 +22,74 @@ export class FirebaseService {
 
   /**
    * Listens for changes in the file requests for the given ids and emits them directly
-   * @param ids  the ids of the file requests
+   * @param id  the id of the file request
    */
-  public watchFileRequests(ids: string[]): Observable<UpsertFileRequest> {
-    return merge(
-      ...ids.map((id) => this.fileRequestCollection.doc<FileRequest>(id).snapshotChanges().pipe(
-        map((action) => {
-          const fileRequest: FileRequest = { ...action.payload.data(), id, deleted: action.type === 'removed' };
-          return new UpsertFileRequest({ fileRequest });
-          /*switch (action.type) {
-            case 'value':
-            case 'added': {
-              return new AddFileRequest({ fileRequest });
-            }
-            case 'modified': {
-              return new UpsertFileRequest({ fileRequest });
-            }
-            case 'removed': {
-              return new UpsertFileRequest({ fileRequest });
-            }
-          }*/
-        }),
-        // filter((fr) => fr !== undefined),
-        // map((fr) => ({ ...fr, id })),
-      )),
+  public watchFileRequest(id: string): Observable<UpsertFileRequest> {
+    return this.fileRequestCollection.doc<FileRequest>(id).snapshotChanges().pipe(
+      map((action) => {
+        const fileRequest: FileRequest = { ...action.payload.data(), id, deleted: action.type === 'removed' };
+        return new UpsertFileRequest({ fileRequest });
+        /*switch (action.type) {
+          case 'value':
+          case 'added': {
+            return new AddFileRequest({ fileRequest });
+          }
+          case 'modified': {
+            return new UpsertFileRequest({ fileRequest });
+          }
+          case 'removed': {
+            return new UpsertFileRequest({ fileRequest });
+          }
+        }*/
+      }),
+      // filter((fr) => fr !== undefined),
+      // map((fr) => ({ ...fr, id })),
     );
   }
 
   /**
    * Listens for changes in the files for the given file request ids and emits them as actions
-   * @param ids  the ids of the file requests
+   * @param id  the id of the file request
    */
-  public watchFilesFromFileRequests(ids: string[]): Observable<UpsertSharedFile> {
-    return merge(
-      ...ids.map((id) => this.fileRequestCollection.doc(id).collection<SharedFile>('files').stateChanges()),
-    ).pipe(
-      flatMap((actions) => actions.map((action) => {
-        const sharedFile = {
-          fileRequest: action.payload.doc.ref.parent.parent.id,
-          ...action.payload.doc.data(),
-          id: action.payload.doc.id,
-        };
-        return new UpsertSharedFile({ sharedFile });
-        /*switch (action.type) {
-          case 'added': {
-            return new AddSharedFile({ sharedFile });
-          }
-          case 'modified': {
-            return new UpsertSharedFile({ sharedFile });
-          }*/
-        /* case 'removed':
-          // Do nothing since the file is saved locally
-          return new DeleteSharedFile({ id: sharedFile.id });
-      }*/
-      })),
+  public watchFilesFromFileRequest(id: string): Observable<UpsertSharedFile> {
+    return this.fileRequestCollection.doc(id).collection<SharedFile>('files').stateChanges().pipe(
+      flatMap((actions) => actions
+        .filter((action) => action.type !== 'removed')
+        .map((action) => {
+          const sharedFile = {
+            fileRequest: action.payload.doc.ref.parent.parent.id,
+            ...action.payload.doc.data(),
+            id: action.payload.doc.id,
+          };
+          return new UpsertSharedFile({ sharedFile });
+          /*switch (action.type) {
+            case 'added': {
+              return new AddSharedFile({ sharedFile });
+            }
+            case 'modified': {
+              return new UpsertSharedFile({ sharedFile });
+            }*/
+          /* case 'removed':
+            // Do nothing since the file is saved locally
+            return new DeleteSharedFile({ id: sharedFile.id });
+        }*/
+        })),
     );
   }
 
-  public createFileRequest(title: string, message: string) {
+  public createFileRequest(title: string, message?: string) {
     const currentDate = new Date();
-    return from(this.fileRequestCollection.add(<FileRequest>{ title, message, createdAt: currentDate, updatedAt: currentDate } as any));
+    const fileRequest = <FileRequest>{ title, message, createdAt: currentDate, updatedAt: currentDate };
+    return from(this.fileRequestCollection.add(fileRequest as any))
+      .pipe(
+        map((ref) => (<FileRequest>{
+          ...fileRequest,
+          id: ref.id,
+          deleted: false,
+          files: [],
+          isIncoming: true,
+        })),
+      );
   }
 
   public updateFileRequest(fileRequest: FileRequest) {
@@ -92,8 +101,28 @@ export class FirebaseService {
     if (!sharedFile.fileRequest) {
       return throwError(new Error('Das FileRequest ist nicht mehr vorhanden!'));
     }
-    const { fileName, fromDevice } = sharedFile;
-    return from(this.getFilesCollection(sharedFile.fileRequest).add(<SharedFile>{ fileName, fromDevice, createdAt: new Date() }));
+    const { fileName, fromDevice, encryptedIV, encryptedSymmetricKey } = sharedFile;
+    return from(this.getFilesCollection(sharedFile.fileRequest).add(<SharedFile>{
+      fileName,
+      fromDevice,
+      createdAt: new Date(),
+      encryptedIV: encryptedIV || null,
+      encryptedSymmetricKey: encryptedSymmetricKey || null,
+    }));
+  }
+
+  public updatedSharedFile(sharedFile: SharedFile) {
+    if (!sharedFile.fileRequest) {
+      return throwError(new Error('Das FileRequest ist nicht mehr vorhanden!'));
+    }
+    const { id, fileName, uploadedAt, fromDevice, encryptedIV, encryptedSymmetricKey } = sharedFile;
+    return from(this.getFilesCollection(sharedFile.fileRequest).doc<SharedFile>(id).update({
+      fileName,
+      fromDevice,
+      uploadedAt,
+      encryptedIV: encryptedIV || null,
+      encryptedSymmetricKey: encryptedSymmetricKey || null,
+    }));
   }
 
   public removeSharedFile(sharedFile: SharedFile) {
@@ -118,12 +147,16 @@ export class FirebaseService {
     );
   }
 
-  public deleteFile(sharedFile: SharedFile) {
+  public getFileMetadata(sharedFile: SharedFile) {
+    return this.getFileRef(sharedFile).getMetadata() as Observable<FullMetadata>;
+  }
+
+  public deleteFile(sharedFile: { id: string, fileRequest?: string }) {
     return this.getFileRef(sharedFile).delete();
   }
 
 
-  private getFileRef = (sharedFile: SharedFile) => {
+  private getFileRef = (sharedFile: { id: string, fileRequest?: string }) => {
     if (sharedFile.fileRequest) {
       return this.storage.ref(`fileRequests/${ sharedFile.fileRequest }/files/${ sharedFile.id }`);
     } else {

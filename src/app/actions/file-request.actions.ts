@@ -14,7 +14,8 @@ export enum FileRequestActionTypes {
   UpdateFileRequests = '[FileRequest] Update FileRequests',
   DeleteFileRequest = '[FileRequest] Delete FileRequest',
   DeleteFileRequests = '[FileRequest] Delete FileRequests',
-  ClearFileRequests = '[FileRequest] Clear FileRequests'
+  AddFileToFileRequest = '[FileRequest] Add File To FileRequest',
+  RemoveFileFromFileRequest = '[FileRequest] Remove File From FileRequest',
 }
 
 export class LoadFileRequests implements Action {
@@ -94,8 +95,18 @@ export class DeleteFileRequests implements Action {
   }
 }
 
-export class ClearFileRequests implements Action {
-  readonly type = FileRequestActionTypes.ClearFileRequests;
+export class AddFileToFileRequest implements Action {
+  readonly type = FileRequestActionTypes.AddFileToFileRequest;
+
+  constructor(public payload: { fileRequestId: string, sharedFileId: string }) {
+  }
+}
+
+export class RemoveFileFromFileRequest implements Action {
+  readonly type = FileRequestActionTypes.RemoveFileFromFileRequest;
+
+  constructor(public payload: { fileRequestId: string, sharedFileId: string }) {
+  }
 }
 
 export type FileRequestActions =
@@ -110,4 +121,5 @@ export type FileRequestActions =
   | UpdateFileRequests
   | DeleteFileRequest
   | DeleteFileRequests
-  | ClearFileRequests;
+  | AddFileToFileRequest
+  | RemoveFileFromFileRequest;

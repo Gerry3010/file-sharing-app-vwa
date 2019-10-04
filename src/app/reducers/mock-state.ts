@@ -3,6 +3,7 @@ import { sharedFilesFeatureKey } from './shared-file.reducer';
 import { SharedFile } from '../models/shared-file.model';
 import { State } from './index';
 import { fileRequestsFeatureKey } from './file-request.reducer';
+import { downloadFeatureKey } from './download.reducer';
 
 export default <State>{
   [fileRequestsFeatureKey]: {
@@ -13,8 +14,6 @@ export default <State>{
         createdAt: new Date(),
         id: 'FR1',
         message: 'Test FileRequest',
-        privateKey: '',
-        publicKey: '',
         title: 'FileRequest #1',
         updatedAt: new Date(),
       },
@@ -23,8 +22,6 @@ export default <State>{
         createdAt: new Date(),
         id: 'FR2',
         message: 'Test FileRequest 2',
-        privateKey: '',
-        publicKey: '',
         title: 'FileRequest #2',
         updatedAt: new Date(),
       },
@@ -32,7 +29,7 @@ export default <State>{
     loading: false,
   },
   [sharedFilesFeatureKey]: {
-    ids: [ 'FILE1' ],
+    ids: [ 'FILE1', 'FILE2', 'FILE3', 'FILE4', 'FILE5', 'FILE6' ],
     entities: {
       'FILE1': <SharedFile>{
         id: 'FILE1',
@@ -87,6 +84,16 @@ export default <State>{
         fromDevice: 'Gerrys MacBook',
         createdAt: new Date(),
         uploadedAt: new Date(),
+      },
+    },
+  },
+  [downloadFeatureKey]: {
+    downloads: {
+      'FILE6': {
+        sharedFileId: 'FILE6',
+        loadedBytes: 0,
+        totalBytes: 0,
+        completed: true,
       },
     },
   },

@@ -62,7 +62,7 @@ describe('FirebaseService', () => {
 
   it('should watch FileRequest piXuZkPCPgrFE3YpIts7 for changes', (done) => {
     subscriptions.push(
-      service.watchFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe((fileRequest) => {
+      service.watchFileRequest('piXuZkPCPgrFE3YpIts7').subscribe((fileRequest) => {
         expect(fileRequest.type).toBe(FileRequestActionTypes.UpsertFileRequest);
         expect(fileRequest.payload.fileRequest.id).toBe('piXuZkPCPgrFE3YpIts7');
         done();
@@ -72,7 +72,7 @@ describe('FirebaseService', () => {
 
   it('should watch the files from FileRequest piXuZkPCPgrFE3YpIts7', (done) => {
     subscriptions.push(
-      service.watchFilesFromFileRequests([ 'piXuZkPCPgrFE3YpIts7' ]).subscribe((action) => {
+      service.watchFilesFromFileRequest('piXuZkPCPgrFE3YpIts7').subscribe((action) => {
         expect(action.type).toBe(SharedFileActionTypes.UpsertSharedFile);
         expect(action.payload.sharedFile.id).toBeTruthy();
         expect(action.payload.sharedFile.fileRequest).toEqual('piXuZkPCPgrFE3YpIts7');
