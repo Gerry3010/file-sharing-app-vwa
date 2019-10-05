@@ -1,8 +1,9 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { SharedFile } from '../models/shared-file.model';
 import { SharedFileActions, SharedFileActionTypes } from '../actions/shared-file.actions';
-import { createFeatureSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { DownloadActions, DownloadActionTypes } from '../actions/download.actions';
+import * as fromIndex from './index';
 
 
 export const sharedFilesFeatureKey = 'sharedFiles';
@@ -83,3 +84,8 @@ export const {
 } = adapter.getSelectors();
 
 export const selectFeatureState = createFeatureSelector<State>(sharedFilesFeatureKey);
+
+export const selectFileById = createSelector<fromIndex.State, string, State, SharedFile | undefined>(
+  selectFeatureState,
+  (sharedFiles, sharedFileId) => sharedFiles.entities[sharedFileId],
+);

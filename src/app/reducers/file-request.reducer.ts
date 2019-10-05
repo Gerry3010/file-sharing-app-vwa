@@ -1,7 +1,8 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { FileRequest } from '../models/file-request.model';
 import { FileRequestActions, FileRequestActionTypes } from '../actions/file-request.actions';
-import { createFeatureSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import * as fromIndex from './index';
 
 
 export const fileRequestsFeatureKey = 'fileRequests';
@@ -91,3 +92,18 @@ export const {
 } = adapter.getSelectors();
 
 export const selectFeatureState = createFeatureSelector<State>(fileRequestsFeatureKey);
+
+export const selectIncomingFileRequests = createSelector<fromIndex.State, State, FileRequest[]>(
+  selectFeatureState,
+  (state) => Object.values(state.entities).filter((fileRequest) => !!fileRequest.isIncoming),
+);
+
+export const selectOutgoingFileRequests = createSelector<fromIndex.State, State, FileRequest[]>(
+  selectFeatureState,
+  (state) => Object.values(state.entities).filter((fileRequest) => !fileRequest.isIncoming),
+);
+
+export const selectAllFileRequests = createSelector<fromIndex.State, State, FileRequest[]>(
+  selectFeatureState,
+  (state) => Object.values(state.entities),
+);

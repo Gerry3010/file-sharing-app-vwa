@@ -25,11 +25,6 @@ const selectFilesByFileRequestId = createSelector<fromIndex.State, string, fromF
   (fileRequests, sharedFiles, fileRequestId) => fileRequests.entities[fileRequestId].files.map((fileId) => sharedFiles.entities[fileId]),
 );
 
-const selectFileById = createSelector<fromIndex.State, string, fromSharedFile.State, SharedFile | undefined>(
-  fromSharedFile.selectFeatureState,
-  (sharedFiles, sharedFileId) => sharedFiles.entities[sharedFileId],
-);
-
 
 const selectFileRequestByFileId = createSelector<fromIndex.State, string, fromSharedFile.State, fromFileRequest.State, FileRequest>(
   fromSharedFile.selectFeatureState,
@@ -52,4 +47,4 @@ const selectDownloadWithSharedFile =
   );
 
 
-export { selectFilesByFileRequestIds, selectFilesByFileRequestId, selectFileById, selectFileRequestByFileId, selectDownloadWithSharedFile };
+export { selectFilesByFileRequestIds, selectFilesByFileRequestId, selectFileRequestByFileId, selectDownloadWithSharedFile };

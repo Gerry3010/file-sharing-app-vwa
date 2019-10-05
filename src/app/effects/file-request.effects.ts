@@ -15,11 +15,12 @@ import { FileWatcherService } from '../services/file-watcher.service';
 import { Store } from '@ngrx/store';
 import { State } from '../reducers';
 import { selectFeatureState as selectFileRequestState } from '../reducers/file-request.reducer';
-import { selectFileById, selectFileRequestByFileId } from '../reducers/selectors';
+import { selectFileRequestByFileId } from '../reducers/selectors';
 import { FileCryptoService } from '../services/file-crypto.service';
 import { FileRequest } from '../models/file-request.model';
 import { DownloadActionTypes, DownloadFinished } from '../actions/download.actions';
 import { UpdateSharedFile } from '../actions/shared-file.actions';
+import { selectFileById } from '../reducers/shared-file.reducer';
 
 
 @Injectable()

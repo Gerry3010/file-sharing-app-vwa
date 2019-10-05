@@ -33,12 +33,6 @@ describe('Selectors', () => {
     });
   }));
 
-  it('should select the SharedFile with id "FILE1"', async(() => {
-    store.pipe(select(fromSelectors.selectFileById, 'FILE1')).subscribe((file) => {
-      expect(file.id).toBe('FILE1');
-    });
-  }));
-
   it('should select the FileRequest from SharedFile "FILE1"', async(() => {
     store.pipe(select(fromSelectors.selectFileRequestByFileId, 'FILE1')).subscribe((fileRequest) => {
       expect(fileRequest.id).toBe('FR1');
