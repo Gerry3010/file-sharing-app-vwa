@@ -5,6 +5,7 @@ import { Action } from '@ngrx/store';
 import { LoadFileRequests } from '../actions/file-request.actions';
 import { switchMap } from 'rxjs/operators';
 import { FileWatcherService } from '../services/file-watcher.service';
+import { LoadSharedFiles } from '../actions/shared-file.actions';
 
 @Injectable()
 export class AppEffects {
@@ -17,6 +18,7 @@ export class AppEffects {
     switchMap(() => merge(
       this.fileWatcherService.actions$,
       of(new LoadFileRequests()),
+      of(new LoadSharedFiles()),
     )),
   );
 

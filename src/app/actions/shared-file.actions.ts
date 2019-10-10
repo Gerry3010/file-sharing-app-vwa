@@ -4,6 +4,8 @@ import { SharedFile } from '../models/shared-file.model';
 
 export enum SharedFileActionTypes {
   LoadSharedFiles = '[SharedFile] Load SharedFiles',
+  LoadSharedFilesSuccess = '[SharedFile] Load SharedFiles Success',
+  LoadSharedFilesError = '[SharedFile] Load SharedFiles Error',
   AddSharedFile = '[SharedFile] Add SharedFile',
   UpsertSharedFile = '[SharedFile] Upsert SharedFile',
   AddSharedFiles = '[SharedFile] Add SharedFiles',
@@ -18,7 +20,19 @@ export enum SharedFileActionTypes {
 export class LoadSharedFiles implements Action {
   readonly type = SharedFileActionTypes.LoadSharedFiles;
 
+  constructor() {}
+}
+
+export class LoadSharedFilesSuccess implements Action {
+  readonly type = SharedFileActionTypes.LoadSharedFilesSuccess;
+
   constructor(public payload: { sharedFiles: SharedFile[] }) {}
+}
+
+export class LoadSharedFilesError implements Action {
+  readonly type = SharedFileActionTypes.LoadSharedFilesError;
+
+  constructor(public payload: { error: Error }) {}
 }
 
 export class AddSharedFile implements Action {
@@ -75,6 +89,8 @@ export class ClearSharedFiles implements Action {
 
 export type SharedFileActions =
  LoadSharedFiles
+ | LoadSharedFilesSuccess
+ | LoadSharedFilesError
  | AddSharedFile
  | UpsertSharedFile
  | AddSharedFiles

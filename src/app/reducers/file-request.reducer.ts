@@ -16,7 +16,7 @@ export const adapter: EntityAdapter<FileRequest> = createEntityAdapter<FileReque
 
 export const initialState: State = adapter.getInitialState({
   // additional entity state properties
-  loading: true,
+  loading: false,
 });
 
 export function reducer(
@@ -54,6 +54,10 @@ export function reducer(
 
     case FileRequestActionTypes.DeleteFileRequests: {
       return adapter.removeMany(action.payload.ids, state);
+    }
+
+    case FileRequestActionTypes.LoadFileRequests: {
+      return { ...state, loading: true };
     }
 
     case FileRequestActionTypes.LoadFileRequestsSuccess: {

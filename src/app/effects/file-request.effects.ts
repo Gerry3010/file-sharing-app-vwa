@@ -19,7 +19,7 @@ import { selectFileRequestByFileId } from '../reducers/selectors';
 import { FileCryptoService } from '../services/file-crypto.service';
 import { FileRequest } from '../models/file-request.model';
 import { DownloadActionTypes, DownloadFinished } from '../actions/download.actions';
-import { UpdateSharedFile } from '../actions/shared-file.actions';
+import { LoadSharedFilesError, LoadSharedFilesSuccess, SharedFileActionTypes, UpdateSharedFile } from '../actions/shared-file.actions';
 import { selectFileById } from '../reducers/shared-file.reducer';
 
 
@@ -28,20 +28,18 @@ export class FileRequestEffects {
 
   constructor(private actions$: Actions<FileRequestActions>,
               private store: Store<State>,
+              private snackbar: MatSnackBar,
               private cryptoService: FileCryptoService,
               private persistenceService: PersistenceService,
-              private fileWatcherService: FileWatcherService,
-              private snackbar: MatSnackBar) {
+              private fileWatcherService: FileWatcherService) {
   }
 
   @Effect()
   loadFileRequests$ = this.actions$.pipe(
     ofType(FileRequestActionTypes.LoadFileRequests),
 
+    // Loads the file requests from IndexedDB
     switchMap(() => this.persistenceService.getFileRequests()),
-
-    // Tells the FileWatcherService to listen for changes in the loaded file requests
-    tap((fileRequests) => this.fileWatcherService.watchFileRequests(...fileRequests)),
 
     // Dispatches LoadFileRequestsSuccess action with the stored file requests
     map((fileRequests) => new LoadFileRequestsSuccess({ fileRequests })),
@@ -54,6 +52,18 @@ export class FileRequestEffects {
     }),
   );
 
+  @Effect()
+  loadSharedFiles$ = this.actions$.pipe(
+    ofType(SharedFileActionTypes.LoadSharedFiles),
+    switchMap(() => this.persistenceService.getFiles()),
+    map((sharedFiles) => new LoadSharedFilesSuccess({ sharedFiles })),
+    catchError((err: Error | any) => {
+      const error = err instanceof Error ? err : new Error(`${ err }`);
+      this.snackbar.open(`Fehler beim Laden der Dateien: ${ err.message }`);
+      return of(new LoadSharedFilesError({ error }));
+    }),
+  );
+
   @Effect({ dispatch: false })
   watchFileRequests$ = this.actions$.pipe(
     ofType(
@@ -61,6 +71,7 @@ export class FileRequestEffects {
       FileRequestActionTypes.AddFileRequests,
       FileRequestActionTypes.UpsertFileRequest,
       FileRequestActionTypes.UpsertFileRequests,
+      FileRequestActionTypes.LoadFileRequestsSuccess,
     ),
     map((action) =>
       (action.type === FileRequestActionTypes.AddFileRequest || action.type === FileRequestActionTypes.UpsertFileRequest)
@@ -68,7 +79,7 @@ export class FileRequestEffects {
         : action.payload.fileRequests,
     ),
     FileRequestEffects.combineFileRequestWithStore(this.store),
-    map((fileRequests) => fileRequests.filter((fileRequest) => !fileRequest.deleted)),
+    map((fileRequests) => fileRequests.filter((fileRequest) => !fileRequest.isDeleted)),
     filter((fileRequests) => fileRequests.length > 0),
     tap((fileRequests) => this.fileWatcherService.watchFileRequests(...fileRequests)),
   );
@@ -90,13 +101,13 @@ export class FileRequestEffects {
         case FileRequestActionTypes.DeleteFileRequests:
           return action.payload.ids;
         case FileRequestActionTypes.UpsertFileRequest:
-          return action.payload.fileRequest.deleted ? [ action.payload.fileRequest.id as string ] : [];
+          return action.payload.fileRequest.isDeleted ? [ action.payload.fileRequest.id as string ] : [];
         case FileRequestActionTypes.UpsertFileRequests:
-          return action.payload.fileRequests.filter((fr) => fr.deleted).map((fr) => fr.id as string);
+          return action.payload.fileRequests.filter((fr) => fr.isDeleted).map((fr) => fr.id as string);
         case FileRequestActionTypes.UpdateFileRequest:
-          return action.payload.fileRequest.changes.deleted ? [ action.payload.fileRequest.id as string ] : [];
+          return action.payload.fileRequest.changes.isDeleted ? [ action.payload.fileRequest.id as string ] : [];
         case FileRequestActionTypes.UpdateFileRequests:
-          return action.payload.fileRequests.filter((fr) => fr.changes.deleted).map((fr) => fr.id as string);
+          return action.payload.fileRequests.filter((fr) => fr.changes.isDeleted).map((fr) => fr.id as string);
       }
     }),
     filter((requestIds) => requestIds.length > 0),
@@ -132,8 +143,8 @@ export class FileRequestEffects {
     }),
     // Combines (partial) file requests with them from the store
     FileRequestEffects.combineFileRequestWithStore(this.store),
-    // Filters file requests which already have keys, are deleted or outgoing
-    map((fileRequests) => fileRequests.filter((fileRequest) => !fileRequest.deleted && !fileRequest.publicKey && fileRequest.isIncoming)),
+    // Filters file requests which already have keys, are isDeleted or outgoing
+    map((fileRequests) => fileRequests.filter((fileRequest) => !fileRequest.isDeleted && !fileRequest.publicKey && fileRequest.isIncoming)),
     // Flattens the file requests to a single stream
     concatAll(),
     // Generates a keyPair and returns it with the file request

@@ -40,14 +40,16 @@ export class FileWatcherService implements OnDestroy {
 
   watchFileRequests(...fileRequests: FileRequest[]) {
     for (const fileRequest of fileRequests) {
-      // Watches the file requests for changes
-      this.requestSubscriptions[fileRequest.id] = this.firebaseService.watchFileRequest(fileRequest.id).subscribe((fileRequestAction) => {
-        // Emits the action
-        this.actionsSubject.next(fileRequestAction);
-      });
+      if (!this.requestSubscriptions[fileRequest.id]) {
+        // Watches the file requests for changes
+        this.requestSubscriptions[fileRequest.id] = this.firebaseService.watchFileRequest(fileRequest.id).subscribe((fileRequestAction) => {
+          // Emits the action
+          this.actionsSubject.next(fileRequestAction);
+        });
+      }
 
       // Watches the files in the file requests for changes if the device has created the file request
-      if (fileRequest.isIncoming) {
+      if (!this.fileSubscriptions[fileRequest.id] && fileRequest.isIncoming) {
         this.fileSubscriptions[fileRequest.id] = this.firebaseService.watchFilesFromFileRequest(fileRequest.id).subscribe((fileAction) => {
           // Checks if the action is uploaded
           const sharedFile: SharedFile = { ...fileAction.payload.sharedFile, fileRequest: fileRequest.id };

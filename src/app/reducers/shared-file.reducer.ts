@@ -9,13 +9,13 @@ import * as fromIndex from './index';
 export const sharedFilesFeatureKey = 'sharedFiles';
 
 export interface State extends EntityState<SharedFile> {
-  // additional entities state properties
+  loading: boolean;
 }
 
 export const adapter: EntityAdapter<SharedFile> = createEntityAdapter<SharedFile>();
 
 export const initialState: State = adapter.getInitialState({
-  // additional entity state properties
+  loading: false,
 });
 
 export function reducer(
@@ -56,7 +56,15 @@ export function reducer(
     }
 
     case SharedFileActionTypes.LoadSharedFiles: {
-      return adapter.addAll(action.payload.sharedFiles, state);
+      return { ...state, loading: true };
+    }
+
+    case SharedFileActionTypes.LoadSharedFilesSuccess: {
+      return { ...adapter.addAll(action.payload.sharedFiles, state), loading: false };
+    }
+
+    case SharedFileActionTypes.LoadSharedFilesError: {
+      return { ...state, loading: false };
     }
 
     case SharedFileActionTypes.ClearSharedFiles: {

@@ -95,6 +95,7 @@ export default <State>{
         uploadedAt: new Date(),
       },
     },
+    loading: false,
   },
   [downloadFeatureKey]: {
     downloads: {

@@ -84,7 +84,7 @@ describe('FileRequestEffects', () => {
     actions$ = from([
       new AddFileRequest({ fileRequest: getMockFileRequest() }),
       new UpsertFileRequest({ fileRequest: getMockFileRequest() }),
-      new UpsertFileRequest({ fileRequest: getMockFileRequest({ deleted: true }) }),
+      new UpsertFileRequest({ fileRequest: getMockFileRequest({ isDeleted: true }) }),
     ]);
 
     const watcherSpy = spyOn(fileWatcherService, 'watchFileRequests');
@@ -103,7 +103,7 @@ describe('FileRequestEffects', () => {
   it('should stop watching file requests', (done) => {
     actions$ = from([
       new DeleteFileRequest({ id: 'test' }),
-      new UpsertFileRequest({ fileRequest: getMockFileRequest({ deleted: true }) }),
+      new UpsertFileRequest({ fileRequest: getMockFileRequest({ isDeleted: true }) }),
     ]);
 
     const watcherSpy = spyOn(fileWatcherService, 'stopWatchingFileRequests');
@@ -204,7 +204,7 @@ describe('FileRequestEffects', () => {
       files: [],
       createdAt: new Date(),
       updatedAt: new Date(),
-      deleted: false,
+      isDeleted: false,
       ...additionalProps,
     });
   };

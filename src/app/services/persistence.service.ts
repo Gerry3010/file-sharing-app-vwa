@@ -70,7 +70,7 @@ export class PersistenceService {
     );
   }
 
-  public deleteFileRequests(...fileRequests: FileRequest[]): Observable<void> {
+  public deleteFileRequests(...fileRequests: { id: string }[]): Observable<void> {
     return from(this.dbPromise).pipe(
       flatMap(async (db) => {
         const tx = db.transaction(FILE_REQUESTS_STORE, 'readwrite');
@@ -132,7 +132,7 @@ export class PersistenceService {
     );
   }
 
-  deleteFiles(...sharedFiles: SharedFile[]): Observable<void> {
+  deleteFiles(...sharedFiles: { id: string }[]): Observable<void> {
     return from(this.dbPromise).pipe(
       flatMap(async (db) => {
         const tx = db.transaction(FILES_STORE, 'readwrite');

@@ -27,7 +27,7 @@ export class FirebaseService {
   public watchFileRequest(id: string): Observable<UpsertFileRequest> {
     return this.fileRequestCollection.doc<FileRequest>(id).snapshotChanges().pipe(
       map((action) => {
-        const fileRequest: FileRequest = { ...action.payload.data(), id, deleted: action.type === 'removed' };
+        const fileRequest: FileRequest = { ...action.payload.data(), id, isDeleted: !action.payload.exists };
         return new UpsertFileRequest({ fileRequest });
         /*switch (action.type) {
           case 'value':
@@ -85,7 +85,7 @@ export class FirebaseService {
         map((ref) => (<FileRequest>{
           ...fileRequest,
           id: ref.id,
-          deleted: false,
+          isDeleted: false,
           files: [],
           isIncoming: true,
         })),

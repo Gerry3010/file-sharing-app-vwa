@@ -50,7 +50,7 @@ describe('DownloadManagerService', () => {
       title: 'Test',
       createdAt: new Date(),
       updatedAt: new Date(),
-      deleted: false,
+      isDeleted: false,
       isIncoming: true,
       files: [],
     };
