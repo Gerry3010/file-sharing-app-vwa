@@ -4,7 +4,7 @@ import { FileRequest } from '../models/file-request.model';
 import { SharedFile } from '../models/shared-file.model';
 import { from, Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
-import { FileDownload } from '../models/file-download.model';
+import { FileStatus } from '../models/file-status.model';
 
 export interface DatabaseState extends DBSchema {
   fileRequests: {
@@ -25,7 +25,7 @@ const DB_NAME = 'FileRequestDB';
 const FILE_REQUESTS_STORE = 'fileRequests';
 const FILES_STORE = 'files';
 
-const DOWNLOADS_KEY = 'fileDownloads';
+const STATUSES_KEY = 'fileStatuses';
 
 @Injectable({
   providedIn: 'root',
@@ -145,12 +145,12 @@ export class PersistenceService {
   }
 
 
-  storeDownloads(downloads: FileDownload[]) {
-    localStorage.setItem(DOWNLOADS_KEY, JSON.stringify(downloads));
+  storeFileStatuses(fileStatuses: FileStatus[]) {
+    localStorage.setItem(STATUSES_KEY, JSON.stringify(fileStatuses));
   }
 
-  getDownloads() {
-    return JSON.parse(localStorage.getItem(DOWNLOADS_KEY) || '[]') as FileDownload[];
+  getFileStatuses() {
+    return JSON.parse(localStorage.getItem(STATUSES_KEY) || '[]') as FileStatus[];
   }
 
 }

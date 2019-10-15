@@ -6,6 +6,7 @@ import { FileRequest } from '../models/file-request.model';
 import { combineLatest } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { deleteDB } from 'idb';
+import { FileStatusType } from '../models/file-status.model';
 
 describe('PersistenceService', () => {
   let service: PersistenceService;
@@ -24,9 +25,10 @@ describe('PersistenceService', () => {
   });
 
   beforeEach((done) => {
-    const mockRequest = { id: 'mock', files: [ 'testFile' ], createdAt: new Date(), updatedAt: new Date(), deleted: false, title: 'test' };
-    const mockRequest2 = { id: 'm2', files: [], createdAt: new Date(), updatedAt: new Date(), deleted: false, title: 'Test2' };
-    const mockRequest3 = { id: 'm3', files: [ 'testFile3' ], createdAt: new Date(), updatedAt: new Date(), deleted: false, title: 'Test2' };
+    const createdAt = new Date();
+    const mockRequest = { id: 'mock', files: [ 'testFile' ], createdAt, updatedAt: new Date(), isDeleted: false, title: 'test' };
+    const mockRequest2 = { id: 'm2', files: [], createdAt, updatedAt: new Date(), isDeleted: false, title: 'Test2' };
+    const mockRequest3 = { id: 'm3', files: [ 'testFile3' ], createdAt, updatedAt: new Date(), isDeleted: false, title: 'Test2' };
 
     const mockFile1 = {
       id: 'mockFile',
@@ -77,7 +79,7 @@ describe('PersistenceService', () => {
   });
 
   it('should store a file request', (done) => {
-    const testFileRequest = { id: 'test', files: [], createdAt: new Date(), updatedAt: new Date(), deleted: false, title: 'Test!' };
+    const testFileRequest = { id: 'test', files: [], createdAt: new Date(), updatedAt: new Date(), isDeleted: false, title: 'Test!' };
     service.storeFileRequests(testFileRequest).subscribe((ids) => {
       expect(ids[0]).toEqual(testFileRequest.id);
       createdRequests.push(testFileRequest);
@@ -155,17 +157,22 @@ describe('PersistenceService', () => {
     }, done.fail);
   });
 
-  it('should store and get downloads', async () => {
-    const before = service.getDownloads();
-    service.storeDownloads([
-      { completed: true, sharedFileId: createdFiles[2].id },
+  it('should store and get file statuses', async () => {
+    const before = service.getFileStatuses();
+    service.storeFileStatuses([
+      {
+        id: createdFiles[2].id,
+        type: FileStatusType.DownloadCompleted,
+        message: 'Download abgeschlossen',
+        bytes: { total: 40, loaded: 40 },
+      },
     ]);
-    const after = service.getDownloads();
+    const after = service.getFileStatuses();
 
     expect(before).not.toEqual(after);
 
-    expect(after[0].completed).toBe(true);
-    expect(after[0].sharedFileId).toEqual(createdFiles[2].id);
+    expect(after[0].bytes.total).toBe(40);
+    expect(after[0].id).toEqual(createdFiles[2].id);
   });
 
 });

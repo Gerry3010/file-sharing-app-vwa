@@ -2,8 +2,9 @@ import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { SharedFile } from '../models/shared-file.model';
 import { SharedFileActions, SharedFileActionTypes } from '../actions/shared-file.actions';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { DownloadActions, DownloadActionTypes } from '../actions/download.actions';
 import * as fromIndex from './index';
+import { FileStatusActions, FileStatusActionTypes } from '../actions/file-status.actions';
+import { FileStatusType } from '../models/file-status.model';
 
 
 export const sharedFilesFeatureKey = 'sharedFiles';
@@ -20,7 +21,7 @@ export const initialState: State = adapter.getInitialState({
 
 export function reducer(
   state = initialState,
-  action: SharedFileActions | DownloadActions,
+  action: SharedFileActions | FileStatusActions,
 ): State {
   switch (action.type) {
     case SharedFileActionTypes.AddSharedFile: {
@@ -71,11 +72,11 @@ export function reducer(
       return adapter.removeAll(state);
     }
 
-    case DownloadActionTypes.DownloadFinished: {
-      return adapter.updateOne({
-        id: action.payload.sharedFileId,
-        changes: { blob: action.payload.file, downloadedAt: new Date() },
-      }, state);
+    case FileStatusActionTypes.UpsertFileStatus: {
+      return action.payload.fileStatus.type === FileStatusType.DownloadCompleted ? adapter.updateOne({
+        id: action.payload.fileStatus.id,
+        changes: { downloadedAt: new Date() },
+      }, state) : state;
     }
 
     default: {

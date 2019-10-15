@@ -3,7 +3,8 @@ import { sharedFilesFeatureKey } from './shared-file.reducer';
 import { SharedFile } from '../models/shared-file.model';
 import { State } from './index';
 import { fileRequestsFeatureKey } from './file-request.reducer';
-import { downloadFeatureKey } from './download.reducer';
+import { fileStatusesFeatureKey } from './file-status.reducer';
+import { FileStatusType } from '../models/file-status.model';
 
 export default <State>{
   [fileRequestsFeatureKey]: {
@@ -97,13 +98,14 @@ export default <State>{
     },
     loading: false,
   },
-  [downloadFeatureKey]: {
-    downloads: {
+  [fileStatusesFeatureKey]: {
+    ids: ['FILE6'],
+    entities: {
       'FILE6': {
-        sharedFileId: 'FILE6',
-        loadedBytes: 0,
-        totalBytes: 0,
-        completed: true,
+        id: 'FILE6',
+        type: FileStatusType.DownloadCompleted,
+        bytes: {loaded: 10, total: 10},
+        message: 'Download abgeschlossen',
       },
     },
   },

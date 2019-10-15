@@ -1,6 +1,7 @@
 export interface SharedFile {
   id: string;
 
+  lastModified?: Date;  // Zeitpunkt, an dem die Datei zuletzt geändert wurde
   createdAt: Date;  // Zeitpunkt, an dem der Upload begonnen wurde
   uploadedAt?: Date;  // Zeitpunkt, an dem der Upload abgeschlossen wurde
   downloadedAt?: Date;  // Zeitpunkt, an dem der Download abgeschlossen wurde

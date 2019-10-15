@@ -39,10 +39,4 @@ describe('Selectors', () => {
     });
   }));
 
-  it('should select the Download with SharedFile "FILE6"', async(() => {
-    store.pipe(select(fromSelectors.selectDownloadWithSharedFile, 'FILE6')).subscribe((fileDownload) => {
-      expect(fileDownload.sharedFile.id).toEqual('FILE6');
-    });
-  }));
-
 });

@@ -3,11 +3,9 @@ import { createSelector } from '@ngrx/store';
 import * as fromIndex from './index';
 import * as fromFileRequest from './file-request.reducer';
 import * as fromSharedFile from './shared-file.reducer';
-import * as fromDownload from './download.reducer';
 
 import { FileRequest } from '../models/file-request.model';
 import { SharedFile } from '../models/shared-file.model';
-import { FileDownloadWithFile } from '../models/file-download.model';
 
 
 const selectFilesByFileRequestIds = createSelector<fromIndex.State, string[], fromFileRequest.State, fromSharedFile.State, SharedFile[]>(
@@ -22,7 +20,8 @@ const selectFilesByFileRequestIds = createSelector<fromIndex.State, string[], fr
 const selectFilesByFileRequestId = createSelector<fromIndex.State, string, fromFileRequest.State, fromSharedFile.State, SharedFile[]>(
   fromFileRequest.selectFeatureState,
   fromSharedFile.selectFeatureState,
-  (fileRequests, sharedFiles, fileRequestId) => fileRequests.entities[fileRequestId].files.map((fileId) => sharedFiles.entities[fileId]),
+  (fileRequests, sharedFiles, fileRequestId) =>
+    (fileRequests.entities[fileRequestId].files || []).map((fileId) => sharedFiles.entities[fileId]),
 );
 
 
@@ -36,15 +35,4 @@ const selectFileRequestByFileId = createSelector<fromIndex.State, string, fromSh
 );
 
 
-const selectDownloadWithSharedFile =
-  createSelector<fromIndex.State, string, fromSharedFile.State, fromDownload.State, FileDownloadWithFile>(
-    fromSharedFile.selectFeatureState,
-    fromDownload.selectFeatureState,
-    (sharedFileState, downloadState, sharedFileId) => ({
-      ...downloadState.downloads[sharedFileId],
-      sharedFile: sharedFileState.entities[sharedFileId],
-    }),
-  );
-
-
-export { selectFilesByFileRequestIds, selectFilesByFileRequestId, selectFileRequestByFileId, selectDownloadWithSharedFile };
+export { selectFilesByFileRequestIds, selectFilesByFileRequestId, selectFileRequestByFileId };

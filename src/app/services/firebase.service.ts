@@ -5,7 +5,7 @@ import { SharedFile } from '../models/shared-file.model';
 import { from, Observable, throwError } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { UpsertSharedFile } from '../actions/shared-file.actions';
-import { AngularFireStorage } from '@angular/fire/storage';
+import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/storage';
 import { HttpClient } from '@angular/common/http';
 import { UpsertFileRequest } from '../actions/file-request.actions';
 import FullMetadata = firebase.storage.FullMetadata;
@@ -56,10 +56,11 @@ export class FirebaseService {
       flatMap((actions) => actions
         .filter((action) => action.type !== 'removed')
         .map((action) => {
-          const sharedFile = {
+          const sharedFile = <SharedFile>{
             fileRequest: action.payload.doc.ref.parent.parent.id,
             ...action.payload.doc.data(),
             id: action.payload.doc.id,
+            isDecrypted: false,
           };
           return new UpsertSharedFile({ sharedFile });
           /*switch (action.type) {
@@ -97,15 +98,16 @@ export class FirebaseService {
     return from(this.fileRequestCollection.doc(fileRequest.id).update(<FileRequest>{ title, message, updatedAt: new Date() }));
   }
 
-  public addSharedFile(sharedFile: SharedFile) {
+  public addSharedFile(sharedFile: Partial<SharedFile>) {
     if (!sharedFile.fileRequest) {
       return throwError(new Error('Das FileRequest ist nicht mehr vorhanden!'));
     }
-    const { fileName, fromDevice, encryptedIV, encryptedSymmetricKey } = sharedFile;
+    const { fileName, fromDevice, encryptedIV, encryptedSymmetricKey, lastModified } = sharedFile;
     return from(this.getFilesCollection(sharedFile.fileRequest).add(<SharedFile>{
       fileName,
       fromDevice,
       createdAt: new Date(),
+      lastModified: lastModified || null,
       encryptedIV: encryptedIV || null,
       encryptedSymmetricKey: encryptedSymmetricKey || null,
     }));
@@ -115,11 +117,12 @@ export class FirebaseService {
     if (!sharedFile.fileRequest) {
       return throwError(new Error('Das FileRequest ist nicht mehr vorhanden!'));
     }
-    const { id, fileName, uploadedAt, fromDevice, encryptedIV, encryptedSymmetricKey } = sharedFile;
+    const { id, fileName, uploadedAt, fromDevice, encryptedIV, encryptedSymmetricKey, lastModified } = sharedFile;
     return from(this.getFilesCollection(sharedFile.fileRequest).doc<SharedFile>(id).update({
       fileName,
       fromDevice,
-      uploadedAt,
+      uploadedAt: uploadedAt || null,
+      lastModified: lastModified || null,
       encryptedIV: encryptedIV || null,
       encryptedSymmetricKey: encryptedSymmetricKey || null,
     }));
@@ -136,7 +139,7 @@ export class FirebaseService {
   private getFilesCollection = (fileRequestId: string) => this.fileRequestCollection.doc(fileRequestId).collection('files');
 
 
-  public uploadFile(sharedFile: SharedFile) {
+  public uploadFile(sharedFile: SharedFile): AngularFireUploadTask {
     return this.getFileRef(sharedFile).put(sharedFile.blob, { contentType: sharedFile.blob.type });
   }
 

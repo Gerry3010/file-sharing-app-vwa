@@ -23,9 +23,10 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { FileCryptoService } from '../services/file-crypto.service';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { UpsertSharedFile } from '../actions/shared-file.actions';
-import { DownloadFinished } from '../actions/download.actions';
 import { reducers, State } from '../reducers';
 import { Store, StoreModule } from '@ngrx/store';
+import { UpsertFileStatus } from '../actions/file-status.actions';
+import { FileStatusType } from '../models/file-status.model';
 
 describe('FileRequestEffects', () => {
   let actions$: Observable<any>;
@@ -159,7 +160,7 @@ describe('FileRequestEffects', () => {
         of(wrappedKey),
         fileCryptoService.encryptIV(iv, keyPair.publicKey),
       ])),
-      tap(([ keyPair, _, wrappedKey, encryptedIV ]) => {
+      tap(([ keyPair, encryptedBlob, wrappedKey, encryptedIV ]) => {
         const mockFileRequest = getMockFileRequest({
           files: [ 'FILE_TO_DECRYPT' ],
           isIncoming: true,
@@ -180,12 +181,17 @@ describe('FileRequestEffects', () => {
             isDecrypted: false,
             encryptedSymmetricKey: wrappedKey,
             encryptedIV: encryptedIV,
+            blob: encryptedBlob,
           },
         }));
       }),
-      map(([ _, encryptedBlob, __, ___ ]) => new DownloadFinished({
-        sharedFileId: 'FILE_TO_DECRYPT',
-        file: new File([ encryptedBlob ], mockFile.name, { lastModified: mockFile.lastModified, type: mockFile.type }),
+      map(([ _, encryptedBlob, __, ___ ]) => new UpsertFileStatus({
+        fileStatus: {
+          id: 'FILE_TO_DECRYPT',
+          type: FileStatusType.DownloadCompleted,
+          message: 'Download abgeschlossen',
+          bytes: { loaded: encryptedBlob.size, total: encryptedBlob.size },
+        },
       })),
     );
     effects.decryptFile$.subscribe((updateAction) => {
