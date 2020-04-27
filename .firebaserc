@@ -1,6 +1,0 @@
-{
-  "projects": {
-    "default": "filesharingapp-vwa",
-    "development": "filesharingapp-vwa-dev"
-  }
-}
