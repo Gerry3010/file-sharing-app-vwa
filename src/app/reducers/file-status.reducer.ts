@@ -44,7 +44,12 @@ export const {
   selectTotal,
 } = adapter.getSelectors();
 
-export const selectFileStatusByFileId = createSelector<fromIndex.State, string, State, FileStatus>(
+export const selectFileStatusByFileId = createSelector<fromIndex.State, string, State, FileStatus | undefined>(
   selectFeatureState,
   (state, fileId) => state.entities[fileId],
+);
+
+export const selectFileStatusesByFileIds = createSelector<fromIndex.State, string[], State, FileStatus[]>(
+  selectFeatureState,
+  (state, fileIds) => fileIds.map((fileId) => state.entities[fileId]).filter((status) => !!status),
 );

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="96px" height="107px" viewBox="0 0 96 107" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>JPEG</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-947.000000, -1140.000000)">
+            <g id="JPEG" transform="translate(947.000000, 1140.000000)">
+                <polygon id="Shape-Copy-223" fill="#CBA610" fill-rule="nonzero" points="95.7694398 106.362769 14 106.362769 14 0 70.2164899 0 95.7694398 25.3244688"></polygon>
+                <polygon id="Shape-Copy-222" fill="#F3CE38" fill-rule="nonzero" points="92.2753025 28.0582454 68 28.0582454 68 4"></polygon>
+                <rect id="Rectangle-5-Copy-184" fill="#AF8F0E" x="0" y="16" width="55" height="28" rx="4"></rect>
+                <text font-family="Roboto-Bold, Roboto" font-size="18" font-weight="bold" letter-spacing="-0.432" fill="#F3CE38">
+                    <tspan x="5" y="36">JPEG</tspan>
+                </text>
+                <path d="M48.0039062,76.9882812 L40.9726562,85.9882812 L68.9921875,85.9882812 L59.9921875,74 L52.9960938,83 L48.0039062,76.9882812 Z M73,87.9921875 C73,89.0937555 72.6074258,90.0371054 71.8222656,90.8222656 C71.0371054,91.6074258 70.0937555,92 68.9921875,92 L40.9726562,92 C39.8945259,92 38.9628946,91.6074258 38.1777344,90.8222656 C37.3925742,90.0371054 37,89.0937555 37,87.9921875 L37,59.9726562 C37,58.8945259 37.3925742,57.9628946 38.1777344,57.1777344 C38.9628946,56.3925742 39.8945259,56 40.9726562,56 L68.9921875,56 C70.0937555,56 71.0371054,56.3867149 71.8222656,57.1601562 C72.6074258,57.9335976 73,58.8710882 73,59.9726562 L73,87.9921875 Z" id="-copy-6" fill="#F3CE38"></path>
+            </g>
+        </g>
+    </g>
+</svg>

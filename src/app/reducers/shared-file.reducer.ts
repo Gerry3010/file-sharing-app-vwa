@@ -72,13 +72,6 @@ export function reducer(
       return adapter.removeAll(state);
     }
 
-    case FileStatusActionTypes.UpsertFileStatus: {
-      return action.payload.fileStatus.type === FileStatusType.DownloadCompleted ? adapter.updateOne({
-        id: action.payload.fileStatus.id,
-        changes: { downloadedAt: new Date() },
-      }, state) : state;
-    }
-
     default: {
       return state;
     }
@@ -97,4 +90,9 @@ export const selectFeatureState = createFeatureSelector<State>(sharedFilesFeatur
 export const selectFileById = createSelector<fromIndex.State, string, State, SharedFile | undefined>(
   selectFeatureState,
   (sharedFiles, sharedFileId) => sharedFiles.entities[sharedFileId],
+);
+
+export const selectFilesByIds = createSelector<fromIndex.State, string[], State, SharedFile[]>(
+  selectFeatureState,
+  (state, fileIds) => fileIds.map((fileId) => state.entities[fileId]).filter((file) => !!file),
 );

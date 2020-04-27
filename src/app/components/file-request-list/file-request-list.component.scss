@@ -1,0 +1,10 @@
+@import "~@angular/material/theming";
+
+.no-file-requests {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  width: 100%;
+  color: $dark-secondary-text;
+}

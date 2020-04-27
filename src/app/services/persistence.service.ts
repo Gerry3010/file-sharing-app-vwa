@@ -16,7 +16,6 @@ export interface DatabaseState extends DBSchema {
     value: SharedFile
     indexes: {
       fileRequest: string
-      createdAt: Date
     }
   };
 }
@@ -26,6 +25,7 @@ const FILE_REQUESTS_STORE = 'fileRequests';
 const FILES_STORE = 'files';
 
 const STATUSES_KEY = 'fileStatuses';
+const DEVICE_NAME_KEY = 'deviceName';
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +41,6 @@ export class PersistenceService {
         database.createObjectStore(FILE_REQUESTS_STORE, { keyPath: 'id' });
         const fileStore = database.createObjectStore(FILES_STORE, { keyPath: 'id' });
         fileStore.createIndex('fileRequest', 'fileRequest', { unique: false });
-        fileStore.createIndex('createdAt', 'createdDate', { unique: false });
       },
     });
   }
@@ -151,6 +150,14 @@ export class PersistenceService {
 
   getFileStatuses() {
     return JSON.parse(localStorage.getItem(STATUSES_KEY) || '[]') as FileStatus[];
+  }
+
+  setDeviceName(deviceName: string) {
+    localStorage.setItem(DEVICE_NAME_KEY, deviceName);
+  }
+
+  getDeviceName() {
+    return localStorage.getItem(DEVICE_NAME_KEY) || 'FileSharingApp Web';
   }
 
 }

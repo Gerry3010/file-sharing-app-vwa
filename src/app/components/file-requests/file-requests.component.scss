@@ -1,0 +1,20 @@
+@import "~@angular/material/theming";
+
+mat-toolbar {
+  position: relative;
+  z-index: 3;
+}
+
+.fsa-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+}
+
+::ng-deep mat-tab-header {
+  @include mat-elevation(4);
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0;
+  z-index: 2;
+}

@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>FileRequest importieren</h1>
+<div mat-dialog-content>
+  <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="onClose()">Abbrechen</button>
+</div>

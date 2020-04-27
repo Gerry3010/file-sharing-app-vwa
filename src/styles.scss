@@ -9,4 +9,17 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   min-height: 100vh;
+  color: $dark-primary-text;
+}
+
+.loading-spinner {
+  margin: 16px auto;
+}
+
+.primary-text {
+  color: $dark-primary-text;
+}
+
+.secondary-text {
+  color: $dark-secondary-text;
 }

@@ -8,7 +8,9 @@ import { UpsertSharedFile } from '../actions/shared-file.actions';
 import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/storage';
 import { HttpClient } from '@angular/common/http';
 import { UpsertFileRequest } from '../actions/file-request.actions';
+import * as firebase from 'firebase/app';
 import FullMetadata = firebase.storage.FullMetadata;
+import Timestamp = firebase.firestore.Timestamp;
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +22,14 @@ export class FirebaseService {
     this.fileRequestCollection = firestore.collection<FileRequest>('fileRequests');
   }
 
+  static timestampToDate(timestamp?: unknown): Date | undefined {
+    return (timestamp && timestamp instanceof Timestamp && timestamp.toDate)
+      ? timestamp.toDate()
+      : (timestamp instanceof Date)
+        ? timestamp
+        : undefined;
+  }
+
   /**
    * Listens for changes in the file requests for the given ids and emits them directly
    * @param id  the id of the file request
@@ -27,7 +37,12 @@ export class FirebaseService {
   public watchFileRequest(id: string): Observable<UpsertFileRequest> {
     return this.fileRequestCollection.doc<FileRequest>(id).snapshotChanges().pipe(
       map((action) => {
-        const fileRequest: FileRequest = { ...action.payload.data(), id, isDeleted: !action.payload.exists };
+        let fileRequest: FileRequest = { ...action.payload.data(), id, isDeleted: !action.payload.exists };
+        fileRequest = {
+          ...fileRequest,
+          createdAt: FirebaseService.timestampToDate(fileRequest.createdAt),
+          updatedAt: FirebaseService.timestampToDate(fileRequest.updatedAt),
+        };
         return new UpsertFileRequest({ fileRequest });
         /*switch (action.type) {
           case 'value':
@@ -56,11 +71,18 @@ export class FirebaseService {
       flatMap((actions) => actions
         .filter((action) => action.type !== 'removed')
         .map((action) => {
-          const sharedFile = <SharedFile>{
+          let sharedFile = <SharedFile>{
             fileRequest: action.payload.doc.ref.parent.parent.id,
             ...action.payload.doc.data(),
             id: action.payload.doc.id,
             isDecrypted: false,
+          };
+          sharedFile = {
+            ...sharedFile,
+            createdAt: FirebaseService.timestampToDate(sharedFile.createdAt),
+            lastModified: FirebaseService.timestampToDate(sharedFile.lastModified),
+            uploadedAt: FirebaseService.timestampToDate(sharedFile.uploadedAt),
+            downloadedAt: FirebaseService.timestampToDate(sharedFile.downloadedAt),
           };
           return new UpsertSharedFile({ sharedFile });
           /*switch (action.type) {
@@ -80,7 +102,7 @@ export class FirebaseService {
 
   public createFileRequest(title: string, message?: string) {
     const currentDate = new Date();
-    const fileRequest = <FileRequest>{ title, message, createdAt: currentDate, updatedAt: currentDate };
+    const fileRequest = <FileRequest>{ title, message: message || null, createdAt: currentDate, updatedAt: currentDate };
     return from(this.fileRequestCollection.add(fileRequest as any))
       .pipe(
         map((ref) => (<FileRequest>{
@@ -96,6 +118,10 @@ export class FirebaseService {
   public updateFileRequest(fileRequest: FileRequest) {
     const { title, message } = fileRequest;
     return from(this.fileRequestCollection.doc(fileRequest.id).update(<FileRequest>{ title, message, updatedAt: new Date() }));
+  }
+
+  public deleteFileRequest(fileRequest: { id: string }) {
+    return from(this.fileRequestCollection.doc(fileRequest.id).delete());
   }
 
   public addSharedFile(sharedFile: Partial<SharedFile>) {

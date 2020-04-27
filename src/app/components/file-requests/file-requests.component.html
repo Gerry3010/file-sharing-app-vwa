@@ -1,0 +1,32 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    File Sharing
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-tab-group backgroundColor="primary"
+               mat-align-tabs="center"
+               (selectedIndexChange)="selectedTabChanged($event)"
+               [selectedIndex]="selectedTab">
+  <mat-tab label="Empfangen">
+    <ng-template matTabContent>
+      <app-file-request-list type="incoming" (addFileRequestClick)="this.addFileRequestClicked($event)">
+      </app-file-request-list>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Senden">
+    <ng-template matTabContent>
+      <app-file-request-list type="outgoing" (addFileRequestClick)="this.addFileRequestClicked($event)">
+      </app-file-request-list>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Neueste Dateien">
+    <ng-template matTabContent>
+      <app-file-list [sharedFileIds]="" showFileRequestColumn="true"></app-file-list>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
+
+<button *ngIf="selectedTabFabIcon[selectedTab]" class="fsa-fab" mat-fab (click)="fabClicked($event)">
+  <mat-icon class="material-icons-round">{{ selectedTabFabIcon[selectedTab] }}</mat-icon>
+</button>

@@ -9,14 +9,14 @@ export const fileRequestsFeatureKey = 'fileRequests';
 
 export interface State extends EntityState<FileRequest> {
   // additional entities state properties
-  loading: boolean;
+  loaded: boolean;
 }
 
 export const adapter: EntityAdapter<FileRequest> = createEntityAdapter<FileRequest>();
 
 export const initialState: State = adapter.getInitialState({
   // additional entity state properties
-  loading: false,
+  loaded: false,
 });
 
 export function reducer(
@@ -56,16 +56,12 @@ export function reducer(
       return adapter.removeMany(action.payload.ids, state);
     }
 
-    case FileRequestActionTypes.LoadFileRequests: {
-      return { ...state, loading: true };
-    }
-
     case FileRequestActionTypes.LoadFileRequestsSuccess: {
-      return { ...adapter.addAll(action.payload.fileRequests, state), loading: false };
+      return { ...adapter.addAll(action.payload.fileRequests, state), loaded: true };
     }
 
     case FileRequestActionTypes.LoadFileRequestsError: {
-      return { ...state, loading: false };
+      return { ...state, loaded: true };
     }
 
     case FileRequestActionTypes.AddFileToFileRequest: {
@@ -76,9 +72,12 @@ export function reducer(
     }
 
     case FileRequestActionTypes.RemoveFileFromFileRequest: {
-      return adapter.upsertOne({
-        ...state.entities[action.payload.fileRequestId],
-        files: (state.entities[action.payload.fileRequestId].files || []).filter((fileId) => fileId !== action.payload.sharedFileId),
+      const fileIds = (state.entities[action.payload.fileRequestId] && state.entities[action.payload.fileRequestId].files) || [];
+      return adapter.updateOne({
+        id: action.payload.fileRequestId,
+        changes: {
+          files: fileIds.filter((fileId) => fileId !== action.payload.sharedFileId),
+        },
       }, state);
     }
 
@@ -110,4 +109,9 @@ export const selectOutgoingFileRequests = createSelector<fromIndex.State, State,
 export const selectAllFileRequests = createSelector<fromIndex.State, State, FileRequest[]>(
   selectFeatureState,
   (state) => Object.values(state.entities),
+);
+
+export const selectFileRequestById = createSelector<fromIndex.State, string, State, FileRequest>(
+  selectFeatureState,
+  (state, id) => state.entities[id],
 );

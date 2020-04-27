@@ -18,7 +18,13 @@ import { selectFeatureState as selectFileRequestState } from '../reducers/file-r
 import { selectFileRequestByFileId } from '../reducers/selectors';
 import { FileCryptoService } from '../services/file-crypto.service';
 import { FileRequest } from '../models/file-request.model';
-import { LoadSharedFilesError, LoadSharedFilesSuccess, SharedFileActionTypes, UpdateSharedFile } from '../actions/shared-file.actions';
+import {
+  LoadSharedFilesError,
+  LoadSharedFilesSuccess,
+  SharedFileActions,
+  SharedFileActionTypes,
+  UpdateSharedFile,
+} from '../actions/shared-file.actions';
 import { selectFileById } from '../reducers/shared-file.reducer';
 import { FileService } from '../services/file.service';
 import { FileStatusActionTypes, UpsertFileStatus } from '../actions/file-status.actions';
@@ -29,7 +35,7 @@ import { FileStatus, FileStatusType } from '../models/file-status.model';
 @Injectable()
 export class FileRequestEffects {
 
-  constructor(private actions$: Actions<FileRequestActions>,
+  constructor(private actions$: Actions<FileRequestActions | SharedFileActions>,
               private store: Store<State>,
               private snackbar: MatSnackBar,
               private cryptoService: FileCryptoService,
@@ -119,6 +125,18 @@ export class FileRequestEffects {
     tap((fileRequestIds) => this.fileWatcherService.stopWatchingFileRequests(...fileRequestIds)),
   );
 
+  @Effect({ dispatch: false })
+  downloadFile$ = this.actions$.pipe(
+    ofType(SharedFileActionTypes.DownloadSharedFile),
+    tap((action) => this.fileWatcherService.downloadFile(action.payload.sharedFile)),
+  );
+
+  @Effect({ dispatch: false })
+  stopDownloadingFile$ = this.actions$.pipe(
+    ofType(SharedFileActionTypes.StopDownloadingSharedFile),
+    tap((action) => this.fileWatcherService.stopDownload(action.payload.sharedFile.id)),
+  );
+
   @Effect()
   generateKeyPair$: Observable<UpsertFileRequest> = this.actions$.pipe(
     // Filters the wanted actions
@@ -157,7 +175,7 @@ export class FileRequestEffects {
     map(([ fileRequest, keyPair ]) => new UpsertFileRequest({ fileRequest: { ...fileRequest, ...keyPair } })),
   );
 
-  @Effect({ resubscribeOnError: true })
+  /*@Effect({ resubscribeOnError: true })
   decryptFile$ = this.actions$.pipe(
     ofType(FileStatusActionTypes.UpsertFileStatus),
     // Filters DownloadCompleted actions
@@ -211,8 +229,8 @@ export class FileRequestEffects {
       this.updateFileStatus(id, FileStatusType.Done, 'Fertig!');
     }),
     // Creates an action that updates the shared file
-    map(([ id, blob ]) => new UpdateSharedFile({ sharedFile: { id, changes: { isDecrypted: true, blob } } })),
-  ) as Observable<UpdateSharedFile>;
+    map(([ id, blob ]) => new UpdateSharedFile({ sharedFile: { id, changes: { isDecrypted: true, blob, downloadedAt: new Date() } } })),
+  ) as Observable<UpdateSharedFile>;*/
 
 
   static combineFileRequestWithStore = (store: Store<State>) => (source: Observable<FileRequest[]>) => source.pipe(

@@ -14,73 +14,100 @@ export enum SharedFileActionTypes {
   UpdateSharedFiles = '[SharedFile] Update SharedFiles',
   DeleteSharedFile = '[SharedFile] Delete SharedFile',
   DeleteSharedFiles = '[SharedFile] Delete SharedFiles',
-  ClearSharedFiles = '[SharedFile] Clear SharedFiles'
+  ClearSharedFiles = '[SharedFile] Clear SharedFiles',
+  DownloadSharedFile = '[SharedFile] Download SharedFile',
+  StopDownloadingSharedFile = '[SharedFile] Stop Downloading SharedFile'
 }
 
 export class LoadSharedFiles implements Action {
   readonly type = SharedFileActionTypes.LoadSharedFiles;
 
-  constructor() {}
+  constructor() {
+  }
 }
 
 export class LoadSharedFilesSuccess implements Action {
   readonly type = SharedFileActionTypes.LoadSharedFilesSuccess;
 
-  constructor(public payload: { sharedFiles: SharedFile[] }) {}
+  constructor(public payload: { sharedFiles: SharedFile[] }) {
+  }
 }
 
 export class LoadSharedFilesError implements Action {
   readonly type = SharedFileActionTypes.LoadSharedFilesError;
 
-  constructor(public payload: { error: Error }) {}
+  constructor(public payload: { error: Error }) {
+  }
 }
 
 export class AddSharedFile implements Action {
   readonly type = SharedFileActionTypes.AddSharedFile;
 
-  constructor(public payload: { sharedFile: SharedFile }) {}
+  constructor(public payload: { sharedFile: SharedFile }) {
+  }
 }
 
 export class UpsertSharedFile implements Action {
   readonly type = SharedFileActionTypes.UpsertSharedFile;
 
-  constructor(public payload: { sharedFile: SharedFile }) {}
+  constructor(public payload: { sharedFile: SharedFile }) {
+  }
 }
 
 export class AddSharedFiles implements Action {
   readonly type = SharedFileActionTypes.AddSharedFiles;
 
-  constructor(public payload: { sharedFiles: SharedFile[] }) {}
+  constructor(public payload: { sharedFiles: SharedFile[] }) {
+  }
 }
 
 export class UpsertSharedFiles implements Action {
   readonly type = SharedFileActionTypes.UpsertSharedFiles;
 
-  constructor(public payload: { sharedFiles: SharedFile[] }) {}
+  constructor(public payload: { sharedFiles: SharedFile[] }) {
+  }
 }
 
 export class UpdateSharedFile implements Action {
   readonly type = SharedFileActionTypes.UpdateSharedFile;
 
-  constructor(public payload: { sharedFile: Update<SharedFile> }) {}
+  constructor(public payload: { sharedFile: Update<SharedFile> }) {
+  }
 }
 
 export class UpdateSharedFiles implements Action {
   readonly type = SharedFileActionTypes.UpdateSharedFiles;
 
-  constructor(public payload: { sharedFiles: Update<SharedFile>[] }) {}
+  constructor(public payload: { sharedFiles: Update<SharedFile>[] }) {
+  }
 }
 
 export class DeleteSharedFile implements Action {
   readonly type = SharedFileActionTypes.DeleteSharedFile;
 
-  constructor(public payload: { id: string }) {}
+  constructor(public payload: { id: string }) {
+  }
 }
 
 export class DeleteSharedFiles implements Action {
   readonly type = SharedFileActionTypes.DeleteSharedFiles;
 
-  constructor(public payload: { ids: string[] }) {}
+  constructor(public payload: { ids: string[] }) {
+  }
+}
+
+export class DownloadSharedFile implements Action {
+  readonly type = SharedFileActionTypes.DownloadSharedFile;
+
+  constructor(public payload: { sharedFile: SharedFile }) {
+  }
+}
+
+export class StopDownloadingSharedFile implements Action {
+  readonly type = SharedFileActionTypes.StopDownloadingSharedFile;
+
+  constructor(public payload: { sharedFile: { id: string } }) {
+  }
 }
 
 export class ClearSharedFiles implements Action {
@@ -88,15 +115,17 @@ export class ClearSharedFiles implements Action {
 }
 
 export type SharedFileActions =
- LoadSharedFiles
- | LoadSharedFilesSuccess
- | LoadSharedFilesError
- | AddSharedFile
- | UpsertSharedFile
- | AddSharedFiles
- | UpsertSharedFiles
- | UpdateSharedFile
- | UpdateSharedFiles
- | DeleteSharedFile
- | DeleteSharedFiles
- | ClearSharedFiles;
+  LoadSharedFiles
+  | LoadSharedFilesSuccess
+  | LoadSharedFilesError
+  | AddSharedFile
+  | UpsertSharedFile
+  | AddSharedFiles
+  | UpsertSharedFiles
+  | UpdateSharedFile
+  | UpdateSharedFiles
+  | DeleteSharedFile
+  | DeleteSharedFiles
+  | DownloadSharedFile
+  | StopDownloadingSharedFile
+  | ClearSharedFiles;

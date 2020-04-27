@@ -16,8 +16,9 @@ import { UpdateSharedFile } from '../actions/shared-file.actions';
 })
 export class FileWatcherService implements OnDestroy {
 
-  private requestSubscriptions: { [key: string]: Subscription } = {};
-  private fileSubscriptions: { [key: string]: Subscription } = {};
+  private requestSubscriptions: { [sharedFileId: string]: Subscription } = {};
+  private fileSubscriptions: { [sharedFileId: string]: Subscription } = {};
+  private downloadSubscriptions: { [sharedFileId: string]: Subscription } = {};
   private actionsSubject = new Subject<Action>();
 
   constructor(private firebaseService: FirebaseService, private snackbar: MatSnackBar) {
@@ -48,50 +49,10 @@ export class FileWatcherService implements OnDestroy {
         this.fileSubscriptions[fileRequest.id] = this.firebaseService.watchFilesFromFileRequest(fileRequest.id).subscribe((fileAction) => {
           // Checks if the action is uploaded
           const sharedFile: SharedFile = { ...fileAction.payload.sharedFile, fileRequest: fileRequest.id };
-          if (sharedFile.uploadedAt) {
+          if (sharedFile.uploadedAt && (!sharedFile.isDecrypted || sharedFile.downloadedAt)) {
+            console.log(sharedFile);
             // Downloads the file
-            this.firebaseService.downloadFile(sharedFile).subscribe((event) => {
-              let fileStatus = <FileStatus>{ id: sharedFile.id };
-              switch (event.type) {
-                case HttpEventType.Sent:
-                  fileStatus = { ...fileStatus, type: FileStatusType.DownloadStarted, message: 'Herunterladen...' };
-                  break;
-                case HttpEventType.DownloadProgress: {
-                  const loaded = event.loaded;
-                  const total = event.total;
-                  const bytes = { loaded, total };
-                  fileStatus = { ...fileStatus, type: FileStatusType.DownloadUpdate, message: 'Herunterladen...', bytes };
-                  break;
-                }
-                case HttpEventType.Response: {
-                  if (event.ok) { // Checks if the file was downloaded successfully
-                    const totalBytes = event.body ? event.body.size : 0;
-                    const bytes = { loaded: totalBytes, total: totalBytes };
-
-                    fileStatus = { ...fileStatus, type: FileStatusType.DownloadCompleted, message: 'Download abgeschlossen', bytes };
-
-                    // Updates the shared file; important that this happens before the file status action is emitted
-                    this.actionsSubject.next(new UpdateSharedFile({ sharedFile: { id: sharedFile.id, changes: { blob: event.body } } }));
-
-                    // Deletes the file from the server
-                    this.firebaseService.deleteFile(sharedFile).subscribe({
-                      // Ignores errors or a successful deletion, since a cloud function cleans up old files anyway
-                      error: () => {
-                      },
-                    });
-                  } else {
-                    // Emits download failed
-                    // displays a snackbar // this.snackbar.open(`Fehler beim Laden von '${ sharedFile.fileName }' ${ event.statusText }`);
-                    fileStatus = { ...fileStatus, message: 'Download fehlgeschlagen', type: FileStatusType.Error };
-                  }
-                  break;
-                }
-              }
-              // Emits the action about the download status of the file
-              if (fileStatus) {
-                this.updateFileStatus(fileStatus);
-              }
-            });
+            this.downloadFile(sharedFile);
           }
           // Emits the file action
           this.actionsSubject.next(fileAction);
@@ -115,8 +76,73 @@ export class FileWatcherService implements OnDestroy {
     }
   }
 
+  downloadFile(sharedFile: SharedFile) {
+    this.fileSubscriptions[sharedFile.id] = this.firebaseService.downloadFile(sharedFile).subscribe((event) => {
+      let fileStatus = <FileStatus>{ id: sharedFile.id };
+      switch (event.type) {
+        case HttpEventType.Sent:
+          fileStatus = { ...fileStatus, type: FileStatusType.DownloadStarted, message: 'Herunterladen...' };
+          break;
+        case HttpEventType.DownloadProgress: {
+          const loaded = event.loaded;
+          const total = event.total;
+          const bytes = { loaded, total };
+          fileStatus = { ...fileStatus, type: FileStatusType.DownloadUpdate, message: 'Herunterladen...', bytes };
+          break;
+        }
+        case HttpEventType.Response: {
+          if (event.ok) { // Checks if the file was downloaded successfully
+            const totalBytes = event.body ? event.body.size : 0;
+            const bytes = { loaded: totalBytes, total: totalBytes };
+
+            fileStatus = { ...fileStatus, type: FileStatusType.DownloadCompleted, message: 'Download abgeschlossen', bytes };
+
+            // Updates the shared file; important that this happens before the file status action is emitted
+            this.actionsSubject.next(new UpdateSharedFile({ sharedFile: { id: sharedFile.id, changes: { blob: event.body } } }));
+
+            // Deletes the file from the server
+            this.firebaseService.deleteFile(sharedFile).subscribe({
+              // Ignores errors or a successful deletion, since a cloud function cleans up old files anyway
+              error: () => {
+              },
+            });
+            // TODO: Delete the file from Firestore
+            this.firebaseService.removeSharedFile(sharedFile).subscribe({
+              // Ignores errors or a successful deletion, since a cloud function cleans up old files anyway
+              error: () => {
+              },
+            });
+          } else {
+            // Emits download failed
+            // displays a snackbar // this.snackbar.open(`Fehler beim Laden von '${ sharedFile.fileName }' ${ event.statusText }`);
+            fileStatus = { ...fileStatus, message: 'Download fehlgeschlagen', type: FileStatusType.Error };
+          }
+          break;
+        }
+      }
+      // Emits the action about the download status of the file
+      if (fileStatus) {
+        this.updateFileStatus(fileStatus);
+      }
+    }, (error) => {
+      this.updateFileStatus({ id: sharedFile.id, type: FileStatusType.Error, message: error.toString() });
+    });
+  }
+
+  stopDownload(sharedFileId: string) {
+    if (this.downloadSubscriptions[sharedFileId]) {
+      this.downloadSubscriptions[sharedFileId].unsubscribe();
+    }
+  }
+
   updateFileStatus(fileStatus: FileStatus) {
     this.actionsSubject.next(new UpsertFileStatus({ fileStatus }));
+  }
+
+  async* downloadAndDecryptFile(sharedFile: SharedFile, privateKey: CryptoKey) {
+    const encryptedBlob = await this.firebaseService.downloadFile(sharedFile).toPromise();
+    yield 'TODO: eg. Decrypting...';
+    return;
   }
 
   /*downloadFile(sharedFile: SharedFile): Observable<DownloadStarted | DownloadProgressUpdate | DownloadFinished | DownloadFailed> {

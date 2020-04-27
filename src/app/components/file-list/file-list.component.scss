@@ -1,0 +1,43 @@
+@import "../../../../node_modules/@angular/material/theming";
+
+.file-list-table {
+  width: 100%;
+  background-color: transparent;
+
+  &__action-row {
+    width: 100%;
+
+    &-content {
+      display: flex;
+      justify-content: flex-end;
+      color: $dark-primary-text;
+    }
+  }
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    margin: 8px;
+    object-fit: contain;
+    object-position: center center;
+
+    &-cell {
+      width: 52px;
+    }
+  }
+}
+
+.no-files {
+  text-align: center;
+  color: $dark-secondary-text;
+  width: 100%;
+}
+
+.file-progress-spinner {
+  min-width: 32px;
+}
+
+.file-icon {
+  object-fit: contain !important;
+  border-radius: 0 !important;
+}

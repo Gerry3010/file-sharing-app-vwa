@@ -3,9 +3,11 @@ import { createSelector } from '@ngrx/store';
 import * as fromIndex from './index';
 import * as fromFileRequest from './file-request.reducer';
 import * as fromSharedFile from './shared-file.reducer';
+import * as fromStatuses from './file-status.reducer';
 
 import { FileRequest } from '../models/file-request.model';
 import { SharedFile } from '../models/shared-file.model';
+import { FileStatus } from '../models/file-status.model';
 
 
 const selectFilesByFileRequestIds = createSelector<fromIndex.State, string[], fromFileRequest.State, fromSharedFile.State, SharedFile[]>(
@@ -20,8 +22,9 @@ const selectFilesByFileRequestIds = createSelector<fromIndex.State, string[], fr
 const selectFilesByFileRequestId = createSelector<fromIndex.State, string, fromFileRequest.State, fromSharedFile.State, SharedFile[]>(
   fromFileRequest.selectFeatureState,
   fromSharedFile.selectFeatureState,
-  (fileRequests, sharedFiles, fileRequestId) =>
-    (fileRequests.entities[fileRequestId].files || []).map((fileId) => sharedFiles.entities[fileId]),
+  (fileRequestState, sharedFileState, fileRequestId) => fileRequestState.entities[fileRequestId]
+    ? (fileRequestState.entities[fileRequestId].files || []).map((fileId) => sharedFileState.entities[fileId])
+    : [],
 );
 
 
@@ -35,4 +38,14 @@ const selectFileRequestByFileId = createSelector<fromIndex.State, string, fromSh
 );
 
 
-export { selectFilesByFileRequestIds, selectFilesByFileRequestId, selectFileRequestByFileId };
+const selectFileStatusesByFileRequestId = createSelector<fromIndex.State, string, fromFileRequest.State, fromStatuses.State, FileStatus[]>(
+  fromFileRequest.selectFeatureState,
+  fromStatuses.selectFeatureState,
+  (fileRequestState, statusState, fileRequestId) =>
+    (fileRequestState.entities[fileRequestId] && fileRequestState.entities[fileRequestId].files)
+      ? fileRequestState.entities[fileRequestId].files.map((fileId) => statusState.entities[fileId]).filter((status) => !!status)
+      : [],
+);
+
+
+export { selectFilesByFileRequestIds, selectFilesByFileRequestId, selectFileRequestByFileId, selectFileStatusesByFileRequestId };

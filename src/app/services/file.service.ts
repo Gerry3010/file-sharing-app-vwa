@@ -116,7 +116,7 @@ export class FileService {
       });
       const archive = await zip.generateAsync({ type: 'blob' });
       FileSaver.saveAs(archive, 'Archiv.zip');
-    } else if (sharedFiles.length === 1) {
+    } else if (sharedFiles.length === 1 && sharedFiles[0].blob.size > 0) {
       FileSaver.saveAs(sharedFiles[0].blob, sharedFiles[0].fileName);
     }
   }

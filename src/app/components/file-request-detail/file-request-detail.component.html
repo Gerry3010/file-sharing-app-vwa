@@ -1,0 +1,59 @@
+<mat-toolbar color="primary" class="mat-elevation-z4">
+  <mat-toolbar-row>
+    <button mat-icon-button style="margin-right: 8px;">
+      <mat-icon routerLink="">arrow_back</mat-icon>
+    </button>
+    File Sharing
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-card class="file-request-container" *ngIf="this.loaded; else loading">
+  <ng-container *ngIf="this.fileRequest as fileRequest; else frNotFound">
+    <mat-card-title-group>
+      <mat-card-actions>
+        <button mat-icon-button (click)="deleteFileRequest()">
+          <mat-icon>{{ fileRequest.isIncoming ? 'delete_forever' : 'delete' }}</mat-icon>
+        </button>
+      </mat-card-actions>
+      <mat-card-title>{{ fileRequest.title }}</mat-card-title>
+      <mat-card-subtitle>{{ fileRequest.id }}</mat-card-subtitle>
+    </mat-card-title-group>
+    <div class="qr-code">
+      <ngx-qrcode *ngIf="exportedPublicKey" [qrc-value]="qrCodeValue" qrc-errorCorrectionLevel="L">
+      </ngx-qrcode>
+    </div>
+    <mat-card-content>
+      <mat-list><h3 matSubheader class="files-subheader">Dateien</h3></mat-list>
+      <app-file-list [sharedFileIds]="fileRequest.files || []"></app-file-list>
+      <ng-container *ngIf="!fileRequest.isIncoming">
+        <ng-container *ngTemplateOutlet="dropZone"></ng-container>
+      </ng-container>
+    </mat-card-content>
+  </ng-container>
+</mat-card>
+
+<ng-template #loading>
+  <mat-progress-spinner mode="indeterminate" diameter="64" class="loading-spinner"></mat-progress-spinner>
+</ng-template>
+
+<ng-template #frNotFound>
+  <mat-card-title style="text-align: center;">FileRequest nicht gefunden</mat-card-title>
+</ng-template>
+
+<ng-template #dropZone>
+  <ngx-dropzone (change)="onDropZoneChange($event)">
+    <ngx-dropzone-label>Dateien hier ablegen...</ngx-dropzone-label>
+    <ngx-dropzone-preview *ngFor="let f of filesToUpload" [removable]="true" (removed)="onRemove(f)"
+                          class="dropzone-preview">
+      <ngx-dropzone-label>
+        <img [src]="this.fileService.getFileIconURL(f.name)" alt="icon" class="dropzone-file-icon">
+        <div class="dropzone-filename-text">{{ f.name }}</div>
+        <div *ngIf="getError(f); let error; else progressBar" class="dropzone-error-text">{{ error }}</div>
+        <ng-template #progressBar>
+          <mat-progress-bar [mode]="getProgressBarMode(f)" [value]="getProgressBarPercent(f)"></mat-progress-bar>
+        </ng-template>
+      </ngx-dropzone-label>
+    </ngx-dropzone-preview>
+  </ngx-dropzone>
+</ng-template>
+

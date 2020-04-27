@@ -36,7 +36,7 @@ export default <State>{
         isIncoming: true,
       },
     },
-    loading: false,
+    loaded: false,
   },
   [sharedFilesFeatureKey]: {
     ids: [ 'FILE1', 'FILE2', 'FILE3', 'FILE4', 'FILE5', 'FILE6' ],

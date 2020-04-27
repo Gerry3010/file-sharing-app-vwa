@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="96px" height="107px" viewBox="0 0 96 107" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>EML</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-2107.000000, -708.000000)">
+            <g id="EML" transform="translate(2107.000000, 708.000000)">
+                <polygon id="Shape-Copy-188" fill="#7883A4" fill-rule="nonzero" points="95.7694398 106.362769 14 106.362769 14 0 70.2164899 0 95.7694398 25.3244688"></polygon>
+                <polygon id="Shape-Copy-187" fill="#9AA6CA" fill-rule="nonzero" points="92.2753025 28.0582454 68 28.0582454 68 4"></polygon>
+                <rect id="Rectangle-5-Copy-156" fill="#4B536D" x="0" y="16" width="55" height="28" rx="4"></rect>
+                <text font-family="Roboto-Bold, Roboto" font-size="17" font-weight="bold" letter-spacing="-0.432" fill="#9AA6CA">
+                    <tspan x="10" y="36">EML</tspan>
+                </text>
+                <path d="M55.0039062,83.4609375 L39.0078125,73.4414062 L39.0078125,88.734375 L71,88.734375 L71,73.4414062 L55.0039062,83.4609375 Z M39.0078125,68.7304688 L55.0039062,78.75 L71,68.7304688 L55.0039062,58.7460938 L39.0078125,68.7304688 Z M75.0078125,68.7304688 L75.0078125,88.734375 C75.0078125,89.835943 74.6152383,90.7792929 73.8300781,91.5644531 C73.0449179,92.3496133 72.101568,92.7421875 71,92.7421875 L39.0078125,92.7421875 C37.9062445,92.7421875 36.9628946,92.3496133 36.1777344,91.5644531 C35.3925742,90.7792929 35,89.835943 35,88.734375 L35,68.7304688 C35,68.0039026 35.1757795,67.3417999 35.5273438,66.7441406 C35.878908,66.1464814 36.3476533,65.6718768 36.9335938,65.3203125 L55.0039062,54 L73.0390625,65.3203125 C73.6250029,65.6718768 74.0996076,66.1464814 74.4628906,66.7441406 C74.8261737,67.3417999 75.0078125,68.0039026 75.0078125,68.7304688 Z" id="-copy" fill="#9AA6CA"></path>
+            </g>
+        </g>
+    </g>
+</svg>
